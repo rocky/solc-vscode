@@ -2,7 +2,6 @@
 **Table of Contents**
 
 - [Prerequisites...](#prerequisites)
-    - [Dependency hell](#dependency-hell)
 - [How to run code in this github repository](#how-to-run-code-in-this-github-repository)
     - [Running](#running)
     - [Debugging](#debugging)
