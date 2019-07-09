@@ -8,16 +8,16 @@ the code will be eworked and reused as as a Solidity Language Server.
 
 If you are looking for something for ready day-to-day use, I recommend mention the [solidity plugin](https://marketplace.visualstudio.com/items?itemName=JuanBlanco.solidity) written by Juan Blanco.
 
-# Running
+# Installation
 
-See `README-DEVELOP.md` for how to run.
+See [README-DEVELOP.md](https://github.com/rocky/solc-vscode/blob/master/README-DEVELOP.md) for how to install and run.
 
 # Acknowledgements
 
 There have been several complete rewrites of this code. Here are sources I consulted:
 
 * Microsoft VScode extension for Typescript
-* Microsoft tutorial on this and picked up the simple code LSP Example from https://github.com/microsoft/vscode-extension-samples/tree/master/lsp-sample. (But right now everthing is client-side)
+* Microsoft tutorial on this and picked up the simple code LSP Example from https://github.com/microsoft/vscode-extension-samples/tree/master/lsp-sample. (But right now everything is client-side)
 * the now defunct [kodebox project](https://marketplace.visualstudio.com/items?itemName=kodebox.solidity-language-server)
 * Juan Blanco's plugin mentioned above.
 
