@@ -1,0 +1,113 @@
+{
+	"name": "vscode-solc",
+	"description": "VSCode support of Solidity using using primarily solc",
+	"author": "Rocky Bernstein",
+	"license": "MIT",
+	"version": "0.0.1",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/rocky/vscode-solc"
+	},
+	"engines": {
+		"vscode": "^1.26.0"
+	},
+	"activationEvents": [
+		"onLanguage:solidity",
+		"onCommand:solidity.compile"
+	],
+	"main": "./out/extension",
+	"contributes": {
+		"configuration": {
+			"type": "object",
+			"title": "Solidity configuration",
+			"properties": {
+				"solidity.maxNumberOfProblems": {
+					"scope": "resource",
+					"type": "number",
+					"default": 10,
+					"description": "Controls the maximum number Solidity compiler errors/warnings the server will return."
+				},
+				"solidity.compilerOptions.remappings": {
+					"type": "array",
+					"items": {
+						"type": "object",
+						"title": "Compiler remappings",
+						"properties": {
+							"prefix": {
+								"type": "string",
+								"description": "The prefix to remap"
+							},
+							"path": {
+								"type": "string",
+								"description": "The path to remap the prefix to"
+							}
+						}
+					},
+					"default": [],
+					"description": "Compiler remappings"
+				}
+			}
+		},
+		"languages": [
+			{
+				"id": "solidity",
+				"aliases": [
+					"Solidity",
+					"solidity"
+				],
+				"extensions": [
+					".sol"
+				],
+				"configuration": "./solidity.configuration.json"
+			}
+		],
+		"commands": [
+			{
+				"command": "solidity.compile",
+				"title": "Solidity: Compile Contract"
+			}
+		],
+		"keybindings": [
+			{
+				"command": "solidity.compile",
+				"key": "f5",
+				"mac": "f5",
+				"when": "editorTextFocus && editorLangId == 'solidity'"
+			},
+			{
+				"command": "solidity.compile",
+				"key": "Ctrl+f5",
+				"mac": "Cmd+f5",
+				"when": "editorTextFocus && editorLangId == 'solidity'"
+			}
+		],
+		"snippets": [
+			{
+				"language": "solidity",
+				"path": "./snippets/solidity.json"
+			}
+		],
+		"grammars": [
+			{
+				"language": "solidity",
+				"scopeName": "source.solidity",
+				"path": "./syntaxes/solidity.json"
+			}
+		]
+	},
+	"icon": "images/icon.png",
+	"scripts": {
+		"build": "tsc --build",
+		"watch": "tsc --build --watch",
+		"update-vscode": "vscode-install",
+		"prepublish": "npm run build",
+		"postinstall": "node ./node_modules/vscode/bin/install"
+	},
+	"dependencies": {
+		"solc-lsp": "file:../solc-lsp",
+		"vscode-languageclient": "^4.1.4"
+	},
+	"devDependencies": {
+		"vscode": "^1.1.34"
+	}
+}

@@ -1,0 +1,37 @@
+/* Typescript configuation
+   Apparently in contrast to real JSON, we can have comments here.
+*/
+{
+    "compilerOptions": {
+	/* Basic Options */
+	"module": "commonjs",
+	"target": "es6",
+	"experimentalDecorators": true,   /* decorators on functions, e.g. for memoizing function get */
+	"outDir": "./out",
+	"rootDir": "./src",
+	"moduleResolution": "node",
+
+	// Enable support for importing CommonJS modules targeting es6 modules
+	"esModuleInterop": true,
+
+	// When using above interop will get missing default export error from type check since
+	// modules use "export =" instead of "export default", enable this to ignore errors.
+	"allowSyntheticDefaultImports": true,
+	"lib": [
+            "es6",
+            "dom"
+        ],
+	/* Strict Type-Checking Options */
+	"strict": true,
+	"noImplicitAny": false,                   /* Raise error on expressions and declarations with an implied 'any' type. */
+        "newLine": "LF",
+	"sourceMap": true,
+	"allowJs": true,
+        "noUnusedLocals": true,
+        "noUnusedParameters": true,
+	/* Module Resolution Options */
+	"baseUrl": "./src",
+	},
+    "include": ["src"],
+    "exclude": ["node_modules", ".vscode-test"]
+}

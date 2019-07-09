@@ -1,0 +1,52 @@
+// The module 'vscode' contains the VS Code extensibility API
+// Import the module and reference it with the alias vscode in your code below
+
+import {
+  commands, /* workspace, WorkspaceFolder, */
+  ExtensionContext
+} from "vscode";
+import * as vscode from "vscode";
+
+import { registerSolidityHover } from "./features/hover";
+import { registerDefinition } from "./features/definitions";
+import { registerTypeDefinition } from "./features/type-definition";
+import { registerReferences } from "./features/references";
+import { compileActiveContract } from "./commands";
+
+import { LspManager } from "solc-lsp";
+
+const lspConfig = {};
+const lspMgr = new LspManager(lspConfig);
+
+// this method is called when your extension is activated
+// your extension is activated the very first time the command is executed
+export function activate(context: ExtensionContext) {
+
+
+  const diagnosticsCollection = vscode.languages.createDiagnosticCollection("Solidity");
+  context.subscriptions.push(diagnosticsCollection);
+
+  /* FIXME: these are done on the client side but may eventually be done on the LSP server side
+   */
+  context.subscriptions.push(commands.registerCommand("solidity.compile", () => {
+    compileActiveContract(diagnosticsCollection, lspMgr);
+  }));
+
+  registerSolidityHover(lspMgr);
+  registerDefinition(lspMgr);
+  registerTypeDefinition(lspMgr);
+  registerReferences(lspMgr);
+
+
+  // Use the console to output diagnostic information (console.log) and errors (console.error)
+  // This line of code will only be executed once when your extension is activated
+  console.log('Congratulations, your extension "solidity-language-server" is now active!');
+
+  // context.subscriptions.push(client);
+
+}
+
+// this method is called when your extension is deactivated
+export function deactivate() {
+    ; // Nothing here - move along
+}

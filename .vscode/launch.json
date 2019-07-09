@@ -1,0 +1,24 @@
+// A launch configuration that compiles the extension and then opens it inside a new window
+{
+    "version": "0.2.0",
+    "configurations": [
+
+        {
+            "type": "extensionHost",
+            "request": "launch",
+            "name": "Launch Solidity Client",
+            "runtimeExecutable": "${execPath}",
+            "args": ["--extensionDevelopmentPath=${workspaceRoot}" ],
+            "outFiles": [ "${workspaceRoot}/out/src/**/*.js" ],
+            "stopOnEntry": false,
+            "sourceMaps": true,
+            // "preLaunchTask": "tsc-watch"
+        },
+        ],
+        "compounds": [
+        {
+            "name": "Solidity Client + Server",
+            "configurations": ["Launch Solidity Client", "Attach to Solidity Language Server"]
+        }
+    ]
+}
