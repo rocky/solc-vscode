@@ -20,13 +20,12 @@ You need to have installed
 There are a number of nodejs packages are needed, like [typescript](https://www.typescriptlang.org/), but you can get those via `npm`,
 which is described in a below [section](#how-to-run-code-in-this-github-repository).
 
-Having VSCode around is useful since it can show using the client and server together
-(duh). Download [here](https://code.visualstudio.com/download).
+And of course you need VSCode. Download it [here](https://code.visualstudio.com/download).
 
 # How to run code in this github repository
 
 Clone the repository.
-You'll need to also clone `solc-lsp at the same drectory level as solc-vscode:
+You'll need to also clone `solc-lsp` at the same drectory level as solc-vscode:
 
 ```console
 $ git clone https://github.com/rocky/solc-lsp.git
