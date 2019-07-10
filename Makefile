@@ -10,3 +10,7 @@ compile:
 #: Update vscode
 vscode:
 	npm run update-vscode
+
+#: clear out node_modules
+clean:
+	rm -fr node_modules

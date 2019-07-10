@@ -7,8 +7,9 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-import * as vscode from 'vscode';
-import * as arrays from './arrays';
+import { WorkspaceConfiguration } from "vscode";
+import * as vscode from "vscode";
+import * as arrays from "./arrays";
 
 export enum SolidityServerLogLevel {
   Off,
@@ -20,13 +21,13 @@ export enum SolidityServerLogLevel {
 export namespace SolidityServerLogLevel {
   export function fromString(value: string): SolidityServerLogLevel {
     switch (value && value.toLowerCase()) {
-      case 'normal':
+      case "normal":
         return SolidityServerLogLevel.Normal;
-      case 'terse':
+      case "terse":
         return SolidityServerLogLevel.Terse;
-      case 'verbose':
+      case "verbose":
         return SolidityServerLogLevel.Verbose;
-      case 'off':
+      case "off":
       default:
         return SolidityServerLogLevel.Off;
     }
@@ -35,14 +36,14 @@ export namespace SolidityServerLogLevel {
   export function toString(value: SolidityServerLogLevel): string {
     switch (value) {
       case SolidityServerLogLevel.Normal:
-        return 'normal';
+        return "normal";
       case SolidityServerLogLevel.Terse:
-        return 'terse';
+        return "terse";
       case SolidityServerLogLevel.Verbose:
-        return 'verbose';
+        return "verbose";
       case SolidityServerLogLevel.Off:
       default:
-        return 'off';
+        return "off";
     }
   }
 }
@@ -70,17 +71,17 @@ export class SolidityServiceConfiguration {
       && arrays.equals(this.solServerPluginPaths, other.solServerPluginPaths);
   }
 
-  private static readSolidityServerLogLevel(configuration: vscode.WorkspaceConfiguration): SolidityServerLogLevel {
-    const setting = configuration.get<string>('solidity.server.log', 'verbose');
+  private static readSolidityServerLogLevel(configuration: WorkspaceConfiguration): SolidityServerLogLevel {
+    const setting = configuration.get<string>("solidity.server.log", "verbose");
     return SolidityServerLogLevel.fromString(setting);
   }
 
-  private static readTsServerPluginPaths(configuration: vscode.WorkspaceConfiguration): string[] {
-    return configuration.get<string[]>('solidity.server.pluginPaths', []);
+  private static readTsServerPluginPaths(configuration: WorkspaceConfiguration): string[] {
+    return configuration.get<string[]>("solidity.server.pluginPaths", []);
   }
 
-  private static readNpmLocation(configuration: vscode.WorkspaceConfiguration): string | null {
-    return configuration.get<string | null>('solidity.npm', null);
+  private static readNpmLocation(configuration: WorkspaceConfiguration): string | null {
+    return configuration.get<string | null>("solidity.npm", null);
   }
 
 }
