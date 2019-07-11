@@ -6,12 +6,14 @@ import {
   ExtensionContext
 } from "vscode";
 import * as vscode from "vscode";
+// import { inspect } from "util";
 
 import { registerSolidityHover } from "./features/hover";
 import { registerDefinition } from "./features/definitions";
 import { registerTypeDefinition } from "./features/type-definition";
 import { registerReferences } from "./features/references";
 import { compileActiveContract } from "./commands";
+import { registerEvents } from "./events";
 
 import { LspManager } from "solc-lsp";
 
@@ -98,8 +100,8 @@ export function activate(context: ExtensionContext) {
 	'.' // triggered whenever a '.' is being typed
     );
 
-    context.subscriptions.push(provider1, provider2);
-
+  context.subscriptions.push(provider1, provider2);
+  registerEvents(diagnosticsCollection, lspMgr);
 
   registerSolidityHover(lspMgr);
   registerDefinition(lspMgr);
