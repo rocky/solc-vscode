@@ -22,7 +22,8 @@ import { solcErrToDiagnostic } from "./diagnostics";
 // }
 
 
-export function compileActiveContract(diagnosticCollection: DiagnosticCollection, lspMgr: LspManager) {
+export function compileActiveContract(diagnosticCollection: DiagnosticCollection,
+                                      lspMgr: LspManager, warn: boolean) {
 
   const editor = window.activeTextEditor;
   if (!editor) {
@@ -31,7 +32,7 @@ export function compileActiveContract(diagnosticCollection: DiagnosticCollection
 
   const fileName = editor.document.fileName;
   if (path.extname(fileName) !== ".sol") {
-    window.showWarningMessage(`${fileName} not a solidity file (*.sol)`);
+    if (warn) window.showWarningMessage(`${fileName} not a solidity file (*.sol)`);
     return;
   }
 

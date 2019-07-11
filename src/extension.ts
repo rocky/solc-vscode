@@ -31,7 +31,7 @@ export function activate(context: ExtensionContext) {
   /* FIXME: these are done on the client side but may eventually be done on the LSP server side
    */
   context.subscriptions.push(commands.registerCommand("solidity.compile", () => {
-    compileActiveContract(diagnosticsCollection, lspMgr);
+    compileActiveContract(diagnosticsCollection, lspMgr, true);
   }));
 
 
