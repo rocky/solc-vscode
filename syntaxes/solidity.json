@@ -8,27 +8,33 @@
   "patterns": [
     {
       "name": "keyword.control",
-      "match": "\\b(event|enum)\\s+([A-Za-z_]\\w*)\\b\n",
+      "match": "\\b(event|enum)\\s+([A-Za-z_][A-Za-z_0-9]*)\\b\n",
       "captures": {
-        "2": {
+        "1": {
           "name": "support.function"
         },
-        "3": null
+        "2": {
+          "name": "entity.name.function"
+        }
       }
     },
     {
       "name": "keyword.control"
     },
     {
-      "match": "\\\\b(pragma|contract|interface|struct|library|function|modifier|enum|assembly)\\\\s+([A-Za-z_]\\\\w*)(?:\\\\s+is\\\\s+((?:[A-Za-z_][\\\\,\\\\s]*)*))?\\\\b\n",
+      "match": "\\b(pragma|contract|interface|struct|library|function|modifier|enum|assembly)\\s+([A-Za-z_]\\w*)(?:\\s+is\\s+((?:[A-Za-z_][\\,\\s]*)*))?\\b\n",
       "captures": {
-        "2": {
+        "1": {
           "name": "entity.name.function"
         },
-        "3": {
+        "2": {
           "name": "entity.name.function"
         }
       }
+    },
+    {
+      "name": "keyword.control",
+      "match": "\\b(?:event|pragma|contract|interface|struct|library|function|modifier|enum|assembly)\\b"
     },
     {
       "match": "\\b(address|string\\d*|bytes\\d*|int\\d*|uint\\d*|bool|hash\\d*)(?:\\s+(?:indexed\\s+)?([A-Za-z_]\\w*)\\s*[,\\)])?\\b",
@@ -95,20 +101,24 @@
       }
     },
     {
+      "name": "storage.control",
+      "match": "\\b(?:constant|let|var|public|external|private|new)\\b"
+    },
+    {
       "name": "keyword.control",
       "match": "\\b(?:wei|szabo|finney|ether|seconds|minutes|hours|days|weeks|years\\_)\\b"
     },
     {
       "name": "keyword.control",
-      "match": "\\b(?:var|import|function|enum|constant|if|else|for|while|do|break|continue|throw|returns?|private|public|external|inherited|storage|delete|memory|this|suicide|let|new|is|ether|wei|finney|szabo|seconds|minutes|hours|days|weeks|years\\_)\\b",
-      "captures": {
-        "1": {
-          "name": "constant.language"
-        },
-        "2": {
-          "name": "keyword.control"
-        }
-      }
+      "match": "\\b(?:if|else|for|while|do|break|continue)\\b"
+    },
+    {
+      "name": "keyword.control.import",
+      "match": "\\bimport\\b"
+    },
+    {
+      "name": "keyword.control",
+      "match": "\\b(?:event|function|enum|throw|returns?|private|public|external|inherited|storage|delete|memory|this|suicide|is)\\b"
     },
     {
       "match": "\\b(?:[A-Za-z_]\\w+)(\\s+(?:private|public|external|inherited))?\\s+([A-Za-z_]\\w*)\\;"

@@ -1,4 +1,4 @@
-.PHONY: compile vscode all
+.PHONY: compile vscode all grammar grammar-lint
 
 #: "Build" this - really just an "npm install"
 all:
@@ -11,8 +11,13 @@ build: compile
 compile:
 	tsc --build
 
-grammar:
+# Create JSON syntax grammar from YAML
+grammar: grammar-lint
 	npm run grammar-from-yaml
+
+#: Lint syntax grammar
+grammar-lint:
+	npm run grammar-lint
 
 #: Update vscode
 vscode:
