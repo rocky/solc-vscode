@@ -11,7 +11,7 @@ import * as vscode from "vscode";
 import { registerSolidityHover } from "./features/hover";
 import { registerDefinition } from "./features/definitions";
 import { solcCompletionItemsProvider,
-	 solcCompletionItemsProviderDot } from "./features/completions";
+         solcCompletionItemsProviderDot } from "./features/completions";
 import { registerTypeDefinition } from "./features/type-definition";
 import { registerReferences } from "./features/references";
 import { compileActiveContract } from "./commands";
@@ -67,5 +67,5 @@ export function activate(context: ExtensionContext) {
 
 // this method is called when your extension is deactivated
 export function deactivate() {
-    ; // Nothing here - move along
+    // Nothing here - move along
 }
