@@ -1,7 +1,10 @@
 import {
-    CompletionItem,
-    CompletionItemKind,
-    // Position
+  CancellationToken,
+  CompletionContext,
+  CompletionItem,
+  CompletionItemKind,
+  Position,
+  TextDocument,
 } from "vscode";
 
 // import { LanguageServiceHost } from "./types";
@@ -131,23 +134,6 @@ function getUnitCompletions(): CompletionItem[] {
 
     return etherUnitCompletions.concat(timeUnitCompletions);
 }
-
-/*
-export function getCompletionsAtPosition(host: LanguageServiceHost, fileName: string, position: Position): CompletionItem[] {
-    if (host.readFile) {
-        const text = host.readFile(fileName);
-        const lineTexts = text.split(/\r?\n/g);
-        const lineText = lineTexts[position.line];
-        const { triggeredByDot, wordEndCharacter } = isCompletionTriggeredByDot(lineText, position.character);
-        if (triggeredByDot) {
-            return getContextualCompletions(lineText, wordEndCharacter);
-        } else {
-            return getAllCompletions(text);
-        }
-    }
-    return [];
-}
-*/
 
 export function getAllCompletions(text: string): CompletionItem[] {
     let result;
@@ -401,4 +387,34 @@ function getMsgCompletions(): CompletionItem[] {
             label: "value"
         }
     ];
+}
+
+const getCompletionItems = function(document: TextDocument, position: Position, token: CancellationToken,
+					   context: CompletionContext): CompletionItem[] {
+  token; context;
+  const text = document.getText();
+  const lineTexts = text.split(/\r?\n/g);
+  const lineText = lineTexts[position.line];
+  return getAllCompletions(lineText);
+}
+
+const getCompletionItemsAfterDot = function(document: TextDocument, position: Position, token: CancellationToken,
+					    context: CompletionContext): CompletionItem[] {
+  token; context;
+  const text = document.getText();
+  const lineTexts = text.split(/\r?\n/g);
+  const lineText = lineTexts[position.line];
+  const { triggeredByDot, wordEndCharacter } = isCompletionTriggeredByDot(lineText, position.character);
+  triggeredByDot; // Should be true.
+  return getContextualCompletions(lineText, wordEndCharacter);
+}
+
+export const solcCompletionItemsProvider = {
+  provideCompletionItems: getCompletionItems
+  // No resolveCompletionItem for now
+}
+
+export const solcCompletionItemsProviderDot = {
+  provideCompletionItems: getCompletionItemsAfterDot
+  // No resolveCompletionItem for now
 }
