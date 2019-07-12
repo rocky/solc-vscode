@@ -12,10 +12,10 @@ export function registerReferences(lspMgr: LspManager) {
     {
       // tslint:disable-next-line:object-literal-shorthand
       provideReferences: async function(document: vscode.TextDocument, position: vscode.Position,
-        context: vscode.ReferenceContext, token: vscode.CancellationToken
-        // token: vscode.CancellationToken
+					context: vscode.ReferenceContext, cancelToken: vscode.CancellationToken,
       ): Promise<vscode.Location[]> {
-        context; token;
+	if (cancelToken.isCancellationRequested) return [];
+        context;
         const filePath = document.uri.fsPath;
         const tup = lspMgr.solcAstNodeFromLineColPosition(filePath, position);
         if (!tup) return [];

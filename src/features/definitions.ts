@@ -10,9 +10,10 @@ export function registerDefinition(lspMgr: LspManager) {
   vscode.languages.registerDefinitionProvider(
     { scheme: "file", language: "solidity" },
     {
-      provideDefinition(document: vscode.TextDocument, position: vscode.Position
-        // token: vscode.CancellationToken
+      provideDefinition(document: vscode.TextDocument, position: vscode.Position,
+			cancelToken: vscode.CancellationToken
       ) {
+	if (cancelToken.isCancellationRequested) return [];
         const filePath = document.uri.fsPath;
         const tup = lspMgr.solcAstNodeFromLineColPosition(filePath, position);
         if (!tup) return [];

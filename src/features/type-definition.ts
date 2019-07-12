@@ -6,8 +6,10 @@ export function registerTypeDefinition(lspMgr: LspManager) {
     { scheme: "file", language: "solidity" },
     {
       provideTypeDefinition(document: vscode.TextDocument, position: vscode.Position,
-        // token: vscode.CancellationToken
+			    cancelToken: vscode.CancellationToken
+
       ) {
+	if (cancelToken.isCancellationRequested) return [];
         const filePath = document.uri.fsPath;
         const tup = lspMgr.solcAstNodeFromLineColPosition(filePath, position);
         if (!tup) return [];
