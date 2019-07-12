@@ -11,6 +11,9 @@ build: compile
 compile:
 	tsc --build
 
+grammar:
+	npm run grammar-from-yaml
+
 #: Update vscode
 vscode:
 	npm run update-vscode

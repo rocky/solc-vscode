@@ -1,0 +1,189 @@
+##############################################################################################
+# A TextMate Solidity grammar for VSCode.
+
+# See https://solidity.readthedocs.io/en/v0.5.10/miscellaneous.html
+# See https://macromates.com/manual/en/language_grammars for
+# information about TextMate Grammars.
+
+# TextMate grammars are a structured collection of Oniguruma regular expressions writin
+# as JSON, soth is needs to be converted into JSON before it can be used by VSCode.
+
+# Use "make grammar" or "npm run grammar-from-yaml" to do the conversion
+
+# For Solidity Grammar information, see:
+# - https://solidity.readthedocs.io/en/v0.5.10/miscellaneous.html?highlight=grammar#cheatsheet
+# - https://solidity.readthedocs.io/en/v0.5.10/miscellaneous.html#language-grammar
+
+##############################################################################################
+
+###################
+# General section #
+###################
+
+# Unique name for the grammar.
+scopeName: source.solidity
+
+# An array of file-type extensions that the grammar (by default) should be used with.
+fileTypes:
+  - sol
+
+foldingStartMarker: "{\\s*$"
+foldingStopMarker: "^\\s*}"
+
+# TODO: add a uuid ?
+
+
+##############################
+# Grammar and Scope patterns #
+##############################
+
+patterns:
+  # Events
+  - name: keyword.control
+    match: >
+      \b(event|enum)\s+([A-Za-z_]\w*)\b
+    captures:
+      '2':
+        name: support.function
+      '3':
+
+  # Main keywords
+  - name: keyword.control
+  - match: >
+      \\b(pragma|contract|interface|struct|library|function|modifier|enum|assembly)\\s+([A-Za-z_]\\w*)(?:\\s+is\\s+((?:[A-Za-z_][\\,\\s]*)*))?\\b
+    captures:
+      '2':
+        name: entity.name.function
+      '3':
+        name: entity.name.function
+
+  # Built-in types
+  - match: >-
+      \b(address|string\d*|bytes\d*|int\d*|uint\d*|bool|hash\d*)(?:\s+(?:indexed\s+)?([A-Za-z_]\w*)\s*[,\)])?\b
+    captures:
+      '1':
+        name: constant.language
+      '2':
+        name: constant.language
+      '3':
+        name: constant.language
+      '4':
+        name: keyword.control
+
+  # Operators
+  - name: keyword.operator.assignment.compound
+    match: \*=|(?<!\()/=|%=|\+=|\-=
+
+  - name: keyword.operator.assignment.compound.bitwise
+    match: \&=|\^=|<<=|>>=|>>>=|\|=
+
+  - name: keyword.operator.bitwise.shift
+    match: <<|>>>|>>
+
+  - name: keyword.operator.comparison
+    match: ==|!=
+
+  - name: keyword.operator.relational
+    match: <=|>=|<|>
+
+  - name: keyword.operator.logical
+    match: \!|&&|\|\|
+
+  - name: keyword.operator.bitwise
+    match: \&(?=[^&])|~|\^|\|(?=[^|])
+
+  # BooleanLiteral
+  - name: constant.language.boolean
+    match: "\\b(true|false)\\b"
+
+  # Mapping definition
+  - match: >-
+      \b(mapping)\s*\((.*)\s+=>\s+(.*)\)(\s+(?:private|public|external|inherited))?\s+([A-Za-z_]\w*)\b
+
+  # Reserved Keywords
+  - name: keyword.control
+    match: >-
+      \b(?:abstract|after|alias|apply|auto|case|catch|copyof|default|define|final|immutable|in|inline|let|match|mutable|null|of|override|partial|promise|reference|relocatable|sealed|sizeof|static|supports|switch|try|typedef|unchecked\_)\b
+    captures:
+      '1':
+        name: constant.language
+      '2':
+        name: keyword.control
+
+  # NumberUnit
+  - name: keyword.control
+    match: >-
+      \b(?:wei|szabo|finney|ether|seconds|minutes|hours|days|weeks|years\_)\b
+
+  # Other Keywords
+  - name: keyword.control
+    match: >-
+      \b(?:var|import|function|enum|constant|if|else|for|while|do|break|continue|throw|returns?|private|public|external|inherited|storage|delete|memory|this|suicide|let|new|is|ether|wei|finney|szabo|seconds|minutes|hours|days|weeks|years\_)\b
+    captures:
+      '1':
+        name: constant.language
+      '2':
+        name: keyword.control
+
+  # Variable definitions
+  - match: >-
+      \b(?:[A-Za-z_]\w+)(\s+(?:private|public|external|inherited))?\s+([A-Za-z_]\w*)\;
+
+  # "msg", "tx",  and "block" special usage
+  - match: '\b(msg|block|tx)\.([A-Za-z_]\w*)\b'
+    captures:
+      '1':
+        name: support.type
+
+  # Function call
+  - match: '\b([A-Za-z_]\w*)\s*\('
+
+  # Strings
+  - match: '([\"\''].*[\"\''])'
+    name: string.quoted
+
+  # DecimalNumber
+  # Examples:
+  # 1
+  #    1234
+  - match: \b(\d+)\b
+    name: constant.numeric
+
+  # HexLiteral
+  # Examples:
+  #   0xfee
+  #   0Xl334
+  - name: constant.numeric
+    match: '\b(0[xX][a-fA-F0-9]+)\b'
+
+  # Line Comment
+  # Examples:
+  #   // this is a comment. Below is an empty comment.
+  #   //
+  #   x = y; // Can follow some code
+  - name: comment.line.solidity
+    match: '(?<!tp:)//.*?$'
+
+
+  # Comment block
+  # Examples:
+  #   /* this is a comment */
+  #   /* this is
+  #      one too that spans many
+  #      lines
+  #   */
+  - name: comment.block.solidity
+    begin: /\*
+    end: \*/
+    captures:
+      '2':
+        name: support.function
+
+  # Commment
+  - name: comment
+    match: \/\/.*
+
+  # Multiline comments
+  - name: comment
+    begin: (\/\*)
+    end: (\*\/)
