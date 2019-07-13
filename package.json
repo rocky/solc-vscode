@@ -2,6 +2,7 @@
     "name": "vscode-solc",
     "description": "VSCode support of Solidity using using primarily solc",
     "author": "Rocky Bernstein",
+    "publisher": "rocky",
     "license": "MIT",
     "version": "0.0.1",
     "repository": {
@@ -11,6 +12,13 @@
     "engines": {
         "vscode": "^1.36.0"
     },
+    "categories": [
+	"Programming Languages"
+    ],
+    "keywords": [
+	"solidity",
+	"ethereum"
+    ],
     "activationEvents": [
         "onLanguage:solidity",
         "onCommand:solidity.compile"
@@ -99,6 +107,7 @@
     "scripts": {
         "build": "tsc --build",
         "grammar-from-yaml": "npx js-yaml syntaxes/solidity.yaml > syntaxes/solidity.json",
+        "grammar-lint": "npx yaml-lint syntaxes/solidity.yaml",
         "watch": "tsc --build --watch",
         "update-vscode": "vscode-install",
         "prepare": "npm run build",
@@ -114,6 +123,7 @@
         "js-yaml": "^3.13.1",
         "tslint": "^5.11.0",
         "typescript": "^3.1.3",
-        "vscode": "^1.1.22"
+        "vscode": "^1.1.22",
+        "yaml-lint": "^1.2.4"
     }
 }

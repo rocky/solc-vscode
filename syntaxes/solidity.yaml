@@ -5,6 +5,9 @@
 # See https://macromates.com/manual/en/language_grammars for
 # information about TextMate Grammars.
 
+# For information on scope selector names, e.g. keyword.control, constant.language.boolean, etc.,
+# See https://macromates.com/manual/en/language_grammars#naming_conventions
+
 # TextMate grammars are a structured collection of Oniguruma regular expressions writin
 # as JSON, soth is needs to be converted into JSON before it can be used by VSCode.
 
@@ -13,6 +16,8 @@
 # For Solidity Grammar information, see:
 # - https://solidity.readthedocs.io/en/v0.5.10/miscellaneous.html?highlight=grammar#cheatsheet
 # - https://solidity.readthedocs.io/en/v0.5.10/miscellaneous.html#language-grammar
+
+# FIXME: add .sol to the end of all of the scopes?
 
 ##############################################################################################
 
@@ -41,21 +46,27 @@ patterns:
   # Events
   - name: keyword.control
     match: >
-      \b(event|enum)\s+([A-Za-z_]\w*)\b
+      \b(event|enum)\s+([A-Za-z_][A-Za-z_0-9]*)\b
     captures:
-      '2':
+      '1':
         name: support.function
-      '3':
+      '2':
+        name: entity.name.function
 
   # Main keywords
   - name: keyword.control
   - match: >
-      \\b(pragma|contract|interface|struct|library|function|modifier|enum|assembly)\\s+([A-Za-z_]\\w*)(?:\\s+is\\s+((?:[A-Za-z_][\\,\\s]*)*))?\\b
+      \b(pragma|contract|interface|struct|library|function|modifier|enum|assembly)\s+([A-Za-z_]\w*)(?:\s+is\s+((?:[A-Za-z_][\,\s]*)*))?\b
     captures:
+      '1':
+        name: entity.name.function
       '2':
         name: entity.name.function
-      '3':
-        name: entity.name.function
+
+  # FIXME: Some of these overlap the above, but the above isn't working
+  - name: keyword.control
+    match: >-
+      \b(?:event|pragma|contract|interface|struct|library|function|modifier|enum|assembly)\b
 
   # Built-in types
   - match: >-
@@ -110,26 +121,35 @@ patterns:
       '2':
         name: keyword.control
 
+  # Storage Modifiers
+  - name: storage.control
+    match: >-
+      \b(?:constant|let|var|public|external|private|new)\b
+
   # NumberUnit
   - name: keyword.control
     match: >-
       \b(?:wei|szabo|finney|ether|seconds|minutes|hours|days|weeks|years\_)\b
 
-  # Other Keywords
+  # Control Flow
   - name: keyword.control
     match: >-
-      \b(?:var|import|function|enum|constant|if|else|for|while|do|break|continue|throw|returns?|private|public|external|inherited|storage|delete|memory|this|suicide|let|new|is|ether|wei|finney|szabo|seconds|minutes|hours|days|weeks|years\_)\b
-    captures:
-      '1':
-        name: constant.language
-      '2':
-        name: keyword.control
+      \b(?:if|else|for|while|do|break|continue)\b
+
+  # Import
+  - name: keyword.control.import
+    match: >-
+      \bimport\b
+
+  - name: keyword.control
+    match: >-
+      \b(?:event|function|enum|throw|returns?|private|public|external|inherited|storage|delete|memory|this|suicide|is)\b
 
   # Variable definitions
   - match: >-
       \b(?:[A-Za-z_]\w+)(\s+(?:private|public|external|inherited))?\s+([A-Za-z_]\w*)\;
 
-  # "msg", "tx",  and "block" special usage
+  # "msg", "tx,  and "block" special usage
   - match: '\b(msg|block|tx)\.([A-Za-z_]\w*)\b'
     captures:
       '1':
