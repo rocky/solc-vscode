@@ -11,13 +11,17 @@ build: compile
 compile:
 	tsc --build
 
-# Create JSON syntax grammar from YAML
-grammar: grammar-lint
-	npm run grammar-from-yaml
+#: Lint syntax grammar
+grammar:
+	npm run grammar
 
 #: Lint syntax grammar
 grammar-lint:
 	npm run grammar-lint
+
+#: For developing and testing grammar JSSON
+grammar-test:
+	npm run grammar-test
 
 #: Update vscode
 vscode:

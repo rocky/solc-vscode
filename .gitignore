@@ -4,3 +4,4 @@
 /out
 /package-lock.json
 /tmp
+/syntaxes/solidity-test.yaml

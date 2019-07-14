@@ -122,7 +122,8 @@
     "scripts": {
         "vscode:prepublish": "npm run compile",
         "build": "tsc -p ./",
-        "grammar-from-yaml": "npx js-yaml syntaxes/solidity.yaml > syntaxes/solidity.json",
+        "grammar": "npm run grammar-lint && npx js-yaml syntaxes/solidity.yaml > syntaxes/solidity.json",
+        "grammar-test": "npx yaml-lint syntaxes/solidity-test.yaml && npx js-yaml syntaxes/solidity-test.yaml > syntaxes/solidity.json",
         "grammar-lint": "npx yaml-lint syntaxes/solidity.yaml",
         "lint": "tslint -p ./",
         "watch": "tsc -watch -p ./",

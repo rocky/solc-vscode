@@ -1,20 +1,22 @@
 ##############################################################################################
-# A TextMate Solidity grammar for VSCode.
+# A TextMate Solidity grammar for VSCode's syntax highlighting.
 
-# See https://solidity.readthedocs.io/en/v0.5.10/miscellaneous.html
-# See https://macromates.com/manual/en/language_grammars for
-# information about TextMate Grammars.
+# See https://code.visualstudio.com/api/language-extensions/syntax-highlight-guide for an introduction to
+# how the grammar is used in VScode's syntax highlighting.
+
+# TextMate grammars are a structured collection of Oniguruma regular expressions written
+# ins a JSON file. See https://macromates.com/manual/en/language_grammars for information about TextMate Grammars.
 
 # For information on scope selector names, e.g. keyword.control, constant.language.boolean, etc.,
 # See https://macromates.com/manual/en/language_grammars#naming_conventions
 
-# TextMate grammars are a structured collection of Oniguruma regular expressions writin
-# as JSON, soth is needs to be converted into JSON before it can be used by VSCode.
+# This file is in YAML, so that it reads easier and can contain comments like this.
+# As such, it is needs to be converted into JSON before it can be used by VSCode.
 
 # Use "make grammar" or "npm run grammar-from-yaml" to do the conversion
 
 # For Solidity Grammar information, see:
-# - https://solidity.readthedocs.io/en/v0.5.10/miscellaneous.html?highlight=grammar#cheatsheet
+# - https://solidity.readthedocs.io/en/v0.5.10/miscellaneous.html#cheatsheet
 # - https://solidity.readthedocs.io/en/v0.5.10/miscellaneous.html#language-grammar
 
 # FIXME: add .sol to the end of all of the scopes?
@@ -25,165 +27,95 @@
 # General section #
 ###################
 
-# Unique name for the grammar.
-scopeName: source.solidity
-
-# An array of file-type extensions that the grammar (by default) should be used with.
 fileTypes:
   - sol
+
+name: Solidity
+scopeName: source.solidity
 
 foldingStartMarker: "{\\s*$"
 foldingStopMarker: "^\\s*}"
 
 # TODO: add a uuid ?
 
-
-##############################
-# Grammar and Scope patterns #
-##############################
-
 patterns:
-  # Events
-  - name: keyword.control
-    match: >
-      \b(event|enum)\s+([A-Za-z_][A-Za-z_0-9]*)\b
+  - include: '#natspec'
+  - include: '#comment'
+  - include: '#operator'
+  - include: '#control'
+  - include: '#constant'
+  - include: '#number'
+  - include: '#string'
+  - include: '#type'
+  - include: '#global'
+  - include: '#declaration'
+  - include: '#function-call'
+  - include: '#assembly'
+  - include: '#punctuation'
+
+repository:
+  natspec:
+    patterns:
+      - begin: /\*\*
+        end: \*/
+        name: comment.block.documentation.solidity
+        patterns:
+          - include: '#natspec-tags'
+      - begin: ///
+        end: $
+        name: comment.block.documentation.solidity
+        patterns:
+          - include: '#natspec-tags'
+
+  natspec-tags:
+    patterns:
+      - include: '#natspec-tag-title'
+      - include: '#natspec-tag-author'
+      - include: '#natspec-tag-notice'
+      - include: '#natspec-tag-dev'
+      - include: '#natspec-tag-param'
+      - include: '#natspec-tag-return'
+
+  natspec-tag-title:
+    match: (@title)\b
+    name: storage.type.title.natspec
+
+  natspec-tag-author:
+    match: (@author)\b
+    name: storage.type.author.natspec
+
+  natspec-tag-notice:
+    match: (@notice)\b
+    name: storage.type.dev.natspec
+
+  natspec-tag-dev:
+    match: (@dev)\b
+    name: storage.type.dev.natspec
+
+  natspec-tag-param:
+    match: '(@param)(?:\s+([A-Za-z_]\w*))?\b'
     captures:
       '1':
-        name: support.function
+        name: storage.type.param.natspec
       '2':
-        name: entity.name.function
+        name: variable.other.natspec
 
-  # Main keywords
-  - name: keyword.control
-  - match: >
-      \b(pragma|contract|interface|struct|library|function|modifier|enum|assembly)\s+([A-Za-z_]\w*)(?:\s+is\s+((?:[A-Za-z_][\,\s]*)*))?\b
-    captures:
-      '1':
-        name: entity.name.function
-      '2':
-        name: entity.name.function
-
-  # FIXME: Some of these overlap the above, but the above isn't working
-  - name: keyword.control
-    match: >-
-      \b(?:event|pragma|contract|interface|struct|library|function|modifier|enum|assembly)\b
-
-  # Built-in types
-  - match: >-
-      \b(address|string\d*|bytes\d*|int\d*|uint\d*|bool|hash\d*)(?:\s+(?:indexed\s+)?([A-Za-z_]\w*)\s*[,\)])?\b
-    captures:
-      '1':
-        name: constant.language
-      '2':
-        name: constant.language
-      '3':
-        name: constant.language
-      '4':
-        name: keyword.control
-
-  # Operators
-  - name: keyword.operator.assignment.compound
-    match: \*=|(?<!\()/=|%=|\+=|\-=
-
-  - name: keyword.operator.assignment.compound.bitwise
-    match: \&=|\^=|<<=|>>=|>>>=|\|=
-
-  - name: keyword.operator.bitwise.shift
-    match: <<|>>>|>>
-
-  - name: keyword.operator.comparison
-    match: ==|!=
-
-  - name: keyword.operator.relational
-    match: <=|>=|<|>
-
-  - name: keyword.operator.logical
-    match: \!|&&|\|\|
-
-  - name: keyword.operator.bitwise
-    match: \&(?=[^&])|~|\^|\|(?=[^|])
-
-  # BooleanLiteral
-  - name: constant.language.boolean
-    match: "\\b(true|false)\\b"
-
-  # Mapping definition
-  - match: >-
-      \b(mapping)\s*\((.*)\s+=>\s+(.*)\)(\s+(?:private|public|external|inherited))?\s+([A-Za-z_]\w*)\b
-
-  # Reserved Keywords
-  - name: keyword.control
-    match: >-
-      \b(?:abstract|after|alias|apply|auto|case|catch|copyof|default|define|final|immutable|in|inline|let|match|mutable|null|of|override|partial|promise|reference|relocatable|sealed|sizeof|static|supports|switch|try|typedef|unchecked\_)\b
-    captures:
-      '1':
-        name: constant.language
-      '2':
-        name: keyword.control
-
-  # Storage Modifiers
-  - name: storage.control
-    match: >-
-      \b(?:constant|let|var|public|external|private|new)\b
-
-  # NumberUnit
-  - name: keyword.control
-    match: >-
-      \b(?:wei|szabo|finney|ether|seconds|minutes|hours|days|weeks|years\_)\b
-
-  # Control Flow
-  - name: keyword.control
-    match: >-
-      \b(?:if|else|for|while|do|break|continue)\b
-
-  # Import
-  - name: keyword.control.import
-    match: >-
-      \bimport\b
-
-  - name: keyword.control
-    match: >-
-      \b(?:event|function|enum|throw|returns?|private|public|external|inherited|storage|delete|memory|this|suicide|is)\b
-
-  # Variable definitions
-  - match: >-
-      \b(?:[A-Za-z_]\w+)(\s+(?:private|public|external|inherited))?\s+([A-Za-z_]\w*)\;
-
-  # "msg", "tx,  and "block" special usage
-  - match: '\b(msg|block|tx)\.([A-Za-z_]\w*)\b'
-    captures:
-      '1':
-        name: support.type
-
-  # Function call
-  - match: '\b([A-Za-z_]\w*)\s*\('
-
-  # Strings
-  - match: '([\"\''].*[\"\''])'
-    name: string.quoted
-
-  # DecimalNumber
-  # Examples:
-  # 1
-  #    1234
-  - match: \b(\d+)\b
-    name: constant.numeric
-
-  # HexLiteral
-  # Examples:
-  #   0xfee
-  #   0Xl334
-  - name: constant.numeric
-    match: '\b(0[xX][a-fA-F0-9]+)\b'
+  natspec-tag-return:
+    match: (@return)\b
+    name: storage.type.return.natspec
+  comment:
+    patterns:
+      - include: '#comment-line'
+      - include: '#comment-block'
 
   # Line Comment
   # Examples:
   #   // this is a comment. Below is an empty comment.
   #   //
   #   x = y; // Can follow some code
-  - name: comment.line.solidity
+  comment-line:
     match: '(?<!tp:)//.*?$'
-
+    name: comment.line.solidity
 
   # Comment block
   # Examples:
@@ -192,18 +124,309 @@ patterns:
   #      one too that spans many
   #      lines
   #   */
-  - name: comment.block.solidity
+  comment-block:
     begin: /\*
     end: \*/
+    name: comment.block.solidity
+
+  operator:
+    patterns:
+      - include: '#operator-logic'
+      - include: '#operator-mapping'
+      - include: '#operator-arithmetic'
+      - include: '#operator-binary'
+      - include: '#operator-assignment'
+
+  operator-logic:
+    match: '(==|<(?!<)|<=|>(?!>)|>=|\&\&|\|\||\:(?!=)|\?)'
+    name: keyword.operator.logic.solidity
+
+  operator-mapping:
+    match: (=>)
+    name: storage.type.function.arrow.solidity
+
+  operator-arithmetic:
+    match: (\+|\-|\/|\*)
+    name: keyword.operator.arithmetic.solidity
+
+  operator-binary:
+    match: (\^|\&|\||<<|>>)
+    name: keyword.operator.binary.solidity
+
+  operator-assignment:
+    match: '(\:?=)'
+    name: keyword.operator.assignment.solidity
+
+  control:
+    patterns:
+      - include: '#control-flow'
+      - include: '#control-using'
+      - include: '#control-import'
+      - include: '#control-pragma'
+      - include: '#control-underscore'
+      - include: '#control-other'
+
+  control-flow:
+    match: \b(if|else|for|while|do|break|continue|throw|returns?)\b
+    name: keyword.control.flow.solidity
+
+  control-using:
+    match: \b(using)\b
+    name: keyword.control.using.solidity
+
+  control-import:
+    match: \b(import)\b
+    name: keyword.control.import.solidity
+
+  control-pragma:
+    match: '\b(pragma)(?:\s+([A-Za-z_]\w+)\s+([^\s]+))?\b'
     captures:
+      '1':
+        name: keyword.control.pragma.solidity
       '2':
-        name: support.function
+        name: entity.name.tag.pragma.solidity
+      '3':
+        name: constant.other.pragma.solidity
 
-  # Commment
-  - name: comment
-    match: \/\/.*
+  control-underscore:
+    match: \b(_)\b
+    name: constant.other.underscore.solidity
 
-  # Multiline comments
-  - name: comment
-    begin: (\/\*)
-    end: (\*\/)
+  control-other:
+    match: \b(new|delete|emit)\b
+    name: keyword.control.solidity
+
+  constant:
+    patterns:
+      - include: '#constant-boolean'
+      - include: '#constant-time'
+      - include: '#constant-currency'
+
+  # grammar name: BooleanLiteral
+  constant-boolean:
+    match: \b(true|false)\b
+    name: constant.language.boolean.solidity
+
+  # grammar name: NumberUnit
+  constant-time:
+    match: \b(seconds|minutes|hours|days|weeks|years)\b
+    name: constant.language.time.solidity
+
+  # grammar name: NumberUnit
+  constant-currency:
+    match: \b(ether|wei|finney|szabo)\b
+    name: constant.language.currency.solidity
+
+  number:
+    patterns:
+      - include: '#number-decimal'
+      - include: '#number-hex'
+
+  number-decimal:
+    match: \b(\d+(\.\d+)?)\b
+    name: constant.numeric.decimal.solidity
+
+  number-hex:
+    match: '\b(0[xX][a-fA-F0-9]+)\b'
+    name: constant.numeric.hexadecimal.solidity
+
+  string:
+    patterns:
+      - match: \".*?\"
+        name: string.quoted.double.solidity
+      - match: \'.*?\'
+        name: string.quoted.single.solidity
+
+  type:
+    patterns:
+      - include: '#type-primitive'
+
+  # Built-in types + variable declaration
+  # Examples:
+  #  event Transfer(address indexed _from, address indexed _to, uint256 _value);
+  #                 ^^^^^^^ ^^^^^^^ ^^^^^  ^^^^^^^ ^^^^^^^ ^^^  ^^^^^^^ ^^^^^^
+  #
+  type-primitive:
+    match: \b(address|string\d*|bytes\d*|int\d*|uint\d*|bool|hash\d*)\s+(?:(indexed)\s*)?([A-Za-z_]\w*)\s*[,; \)\t\r\n)]
+    captures:
+      '1':
+        name: constant.language.solidity
+      '2':
+        name: constant.language.solidity
+      '3':
+        name: variable.other.solidity
+
+  # type-primitive:
+  #   match: \b(address|string\d*|bytes\d*|int\d*|uint\d*|bool|hash\d*)\b
+  #   name: support.type.primitive.solidity
+
+
+
+  global:
+    patterns:
+      - include: '#global-variables'
+      - include: '#global-functions'
+
+  global-variables:
+    patterns:
+      - match: \b(msg|block|tx|now)\b
+        name: variable.language.transaction.solidity
+      - match: \b(this)\b
+        name: variable.language.this.solidity
+      - match: \b(super)\b
+        name: variable.language.super.solidity
+
+  global-functions:
+    patterns:
+      - match: \b(require|assert|revert)\b
+        name: keyword.control.exceptions.solidity
+      - match: \b(selfdestruct|suicide)\b
+        name: keyword.control.contract.solidity
+      - match: \b(addmod|mulmod|keccak256|sha256|sha3|ripemd160|ecrecover)\b
+        name: support.function.math.solidity
+      - match: \b(blockhash|gasleft)\b
+        name: variable.language.transaction.solidity
+
+  declaration:
+    patterns:
+      - include: '#declaration-contract'
+      - include: '#declaration-interface'
+      - include: '#declaration-library'
+      - include: '#declaration-struct'
+      - include: '#declaration-event'
+      - include: '#declaration-enum'
+      - include: '#declaration-function'
+      - include: '#declaration-constructor'
+      - include: '#declaration-modifier'
+      - include: '#declaration-mapping'
+
+  declaration-contract:
+    patterns:
+      - match: '\b(contract)(?:\s+([A-Za-z_]\w*))?\b'
+        captures:
+          '1':
+            name: storage.type.contract.solidity
+          '2':
+            name: entity.name.type.contract.solidity
+      - match: \b(is)\b
+        name: storage.modifier.is.solidity
+
+  declaration-interface:
+    match: '\b(interface)(?:\s+([A-Za-z_]\w*))?\b'
+    captures:
+      '1':
+        name: storage.type.interface.solidity
+      '2':
+        name: entity.name.type.interface.solidity
+
+  declaration-library:
+    match: '\b(library)(?:\s+([A-Za-z_]\w*))?\b'
+    captures:
+      '1':
+        name: storage.type.library.solidity
+      '2':
+        name: entity.name.type.library.solidity
+
+  declaration-struct:
+    match: '\b(struct)(?:\s+([A-Za-z_]\w*))?\b'
+    captures:
+      '1':
+        name: storage.type.struct.solidity
+      '2':
+        name: entity.name.type.struct.solidity
+
+  # "event" with identifier
+  # Example:
+  #   event Transfer(address ... )
+  #   ^^^^^ ^^^^^^^^
+  declaration-event:
+    match: '\b(event)(?:\s+([A-Za-z_]\w*))?\b'
+    captures:
+      '1':
+        name: keyword.control.solidity
+      '2':
+        name: entity.name.type.event.solidity
+
+  # Contract constructor
+  # Examples:
+  #  constructor() public {
+  #  ^^^^^^^^^^^
+  declaration-constructor:
+    match: \b(constructor)\b
+    name: storage.type.constructor.solidity
+
+  # "enum" with identifier
+  # Example:
+  #   enum Op { NONE, EQ, NEQ  }
+  #   ^^^^ ^^
+  declaration-enum:
+    match: '\b(enum)(?:\s+([A-Za-z_]\w*))?\b'
+    captures:
+      '1':
+        name: storage.type.enum.solidity
+      '2':
+        name: entity.name.type.enum.solidity
+
+  declaration-function:
+    patterns:
+      - match: '\b(function)\s+([A-Za-z_]\w*)\b'
+        captures:
+          '1':
+            name: storage.type.function.solidity
+          '2':
+            name: entity.name.function.solidity
+      - match: >-
+          \b(private|public|internal|external|constant|pure|view|payable|nonpayable|inherited|indexed|storage|memory)\b
+        name: storage.type.mofifier.solidity
+
+  declaration-modifier:
+    match: '\b(modifier)(?:\s+([A-Za-z_]\w*))?\b'
+    captures:
+      '1':
+        name: storage.type.modifier.solidity
+      '2':
+        name: entity.name.function.solidity
+
+  # Mapping
+  # Example:
+  #   mapping (address => uint) balances;
+  #   ^^^^^^^  ^^^^^^  ^^ ^^^^  ^^^^^^^^
+  # FIXME: there is a bug in the below in that "int)" is matched
+  declaration-mapping:
+    match: \b(mapping)\s*\(([A-Za-z_]\w*)\s*(=>)\s*([A-Za-z_]\w*)\s*\)(?:\s+(private|public|external|inherited))?\s+([A-Za-z_]\w*)\b
+    captures:
+      '1':
+        name: keyword.control.solidity
+      '2':
+        name: support.type.solidity
+      '3':
+        name: storage.type.function.arrow.solidity
+      '4':
+        name': support.type.solidity
+      '5':
+        name': keyword.control.solidity
+      '6':
+        name: variable.other.solidity
+  # declaration-mapping:
+  #   match: \b(mapping)\b
+  #   name: storage.type.mapping.solidity
+
+  function-call:
+    match: '\b([A-Za-z_]\w*)\s*\('
+    name: entity.name.function.solidity
+
+  assembly:
+    patterns:
+      - match: \b(assembly)\b
+        name: keyword.control.assembly.solidity
+      - match: \b(let)\b
+        name: storage.type.assembly.solidity
+
+  punctuation:
+    patterns:
+      - match: ;
+        name: punctuation.terminator.statement.solidity
+      - match: \.
+        name: punctuation.accessor.solidity
+      - match: ','
+        name: punctuation.separator.solidity
