@@ -82,10 +82,6 @@
         ],
         "commands": [
             {
-                "command": "solcAstView.reveal",
-                "title": "Solidity AST View: Reveal"
-            },
-            {
                 "command": "solidity.compile",
                 "title": "Solidity: Compile Contract"
             }

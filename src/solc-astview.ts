@@ -1,5 +1,9 @@
 import * as vscode from 'vscode';
 
+import {
+  ExtensionContext
+} from "vscode";
+
 // FIXME: figure out how to export
 export interface SolcAstNode {
   /* The following attributes are essential, and indicates an that object
@@ -31,20 +35,14 @@ export class SolidityASTView {
   astRoot: SolcAstNode | null;
   lspMgr: LspManager;
 
-  constructor(context: vscode.ExtensionContext,
+  constructor(context: ExtensionContext,
               lspMgr: LspManager, astRoot: SolcAstNode | null) {
     const view = vscode.window.createTreeView("solcAstView", {
       treeDataProvider: this.aNodeWithIdTreeDataProvider(), showCollapseAll: true
     });
     this.lspMgr = lspMgr;
     this.astRoot = astRoot;
-    context; view;
-    // vscode.commands.registerCommand('testView.reveal', async () => {
-    //   const key = await vscode.window.showInputBox({ placeHolder: 'Type the label of the item to reveal' });
-    //   if (key) {
-    //     await view.reveal(nodes[key], { focus: true, select: false, expand: true });
-    //   }
-    // });
+    view; context;
   }
 
 
@@ -53,14 +51,14 @@ export class SolidityASTView {
       label: <vscode.TreeItemLabel>{ label: "???", "foo": void 0},
       collapsibleState: vscode.TreeItemCollapsibleState.None
     };
-    let key = node.nodeType;
+    let label = `${node.nodeType} (${node.id})`;
     let highlights: Array<[number, number]> = [];
     if ("name" in node) {
-      highlights = [[key.length+1, key.length + node.name.length + 1]]
-      key += ` ${node.name}`;
+      highlights = [[label.length+1, label.length + node.name.length + 1]]
+      label += ` ${node.name}`;
     }
     return {
-      label: <vscode.TreeItemLabel>{ label: key, highlights},
+      label: <vscode.TreeItemLabel>{ label, highlights},
       tooltip: this.lspMgr.textFromSrc(node.src),
       collapsibleState: node && node.children && node.children.length ? vscode.TreeItemCollapsibleState.Collapsed : vscode.TreeItemCollapsibleState.None
     };

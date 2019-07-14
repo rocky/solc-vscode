@@ -39,6 +39,15 @@ export function activate(context: ExtensionContext) {
   }));
 
 
+  // context.subscriptions.push(commands.registerCommand("solidity.reveal", async () => {
+  //   const astIdStr = await vscode.window.showInputBox({ placeHolder: "Type the AST id of the item to reveal" });
+  //   if (astIdStr) {
+  //     const astId = parseInt(astIdStr, 10);
+  //     debugger;
+  //     astId;
+  //     // await view.reveal(id2TreeViewNode[astId], { focus: true, select: false, expand: true });
+  //   }
+  // }));
   const provider1 = vscode.languages.registerCompletionItemProvider(
     { scheme: "file", language: "solidity" }, solcCompletionItemsProvider);
 
