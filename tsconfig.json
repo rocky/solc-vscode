@@ -9,7 +9,7 @@
 	"experimentalDecorators": true,   /* decorators on functions, e.g. for memoizing function get */
 	"outDir": "./out",
 	"rootDir": "./src",
-	"moduleResolution": "node",
+	// "moduleResolution": "node",
 
 	// Enable support for importing CommonJS modules targeting es6 modules
 	"esModuleInterop": true,

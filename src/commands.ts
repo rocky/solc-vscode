@@ -3,13 +3,14 @@ import {
   window, /*workspace,*/
   Diagnostic,
   DiagnosticCollection,
-  // Range,
+  ExtensionContext,
   // Selection,
   Uri
 } from "vscode";
 
 import { LspManager } from "solc-lsp";
 import { solcErrToDiagnostic } from "./diagnostics";
+import { SolidityASTView } from "./solc-astview";
 
 // // FIXME put into a function
 // function selectionToRange(selection: Selection): Range {
@@ -23,7 +24,8 @@ import { solcErrToDiagnostic } from "./diagnostics";
 
 
 export function compileActiveContract(diagnosticCollection: DiagnosticCollection,
-                                      lspMgr: LspManager, warn: boolean) {
+                                      lspMgr: LspManager, context: ExtensionContext,
+                                      warn: boolean) {
 
   const editor = window.activeTextEditor;
   if (!editor) {
@@ -46,6 +48,15 @@ export function compileActiveContract(diagnosticCollection: DiagnosticCollection
 
   const uri = Uri.file(fileName);
   const compiled = lspMgr.compile(editor.document.getText(), fileName, {});
+
+  // Update ASTView if we have an ast.
+  if ("sources" in compiled &&
+      fileName in compiled.sources &&
+      "ast" in compiled.sources[fileName]) {
+    const solcAstRoot = compiled.sources[fileName].ast;
+    new SolidityASTView(context, lspMgr, solcAstRoot);
+  }
+
   diagnosticCollection.delete(uri);
   if (compiled.errors) {
     const diagnostics: Array<Diagnostic> = [];

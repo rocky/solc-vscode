@@ -3,28 +3,39 @@
     "description": "VSCode support of Solidity using using primarily solc",
     "author": "Rocky Bernstein",
     "publisher": "rocky",
+    "enableProposedApi": true,
+    "engines": {
+        "vscode": "^1.36.0"
+    },
     "license": "MIT",
     "version": "0.0.1",
     "repository": {
         "type": "git",
         "url": "https://github.com/rocky/vscode-solc"
     },
-    "engines": {
-        "vscode": "^1.36.0"
-    },
     "categories": [
-	"Programming Languages"
+        "Programming Languages"
     ],
     "keywords": [
-	"solidity",
-	"ethereum"
+        "solidity",
+        "ethereum"
     ],
     "activationEvents": [
+        "onView:solcAstView",
+        "onCommand:solidity.reveal",
         "onLanguage:solidity",
         "onCommand:solidity.compile"
     ],
     "main": "./out/extension",
     "contributes": {
+        "views": {
+            "explorer": [
+                {
+                    "id": "solcAstView",
+                    "name": "Solidity AST Tree View"
+                }
+            ]
+        },
         "configuration": {
             "type": "object",
             "title": "Solidity configuration",
@@ -71,6 +82,10 @@
         ],
         "commands": [
             {
+                "command": "solcAstView.reveal",
+                "title": "Solidity AST View: Reveal"
+            },
+            {
                 "command": "solidity.compile",
                 "title": "Solidity: Compile Contract"
             }
@@ -105,25 +120,25 @@
     },
     "icon": "images/icon.png",
     "scripts": {
-        "build": "tsc --build",
+        "vscode:prepublish": "npm run compile",
+        "build": "tsc -p ./",
         "grammar-from-yaml": "npx js-yaml syntaxes/solidity.yaml > syntaxes/solidity.json",
         "grammar-lint": "npx yaml-lint syntaxes/solidity.yaml",
-        "watch": "tsc --build --watch",
+        "lint": "tslint -p ./",
+        "watch": "tsc -watch -p ./",
         "update-vscode": "vscode-install",
-        "prepare": "npm run build",
-        "postinstall": "node ./node_modules/vscode/bin/install"
+        "prepare": "npm run build"
     },
     "dependencies": {
         "solc-lsp": "file:../solc-lsp",
-        "solparse": "^2.2.8",
-        "vscode-languageclient": "^5.2.1"
+        "solparse": "^2.2.8"
     },
     "devDependencies": {
-        "@types/node": "^12.6.2",
+        "@types/node": "*",
+        "@types/vscode": "^1.32.0",
         "js-yaml": "^3.13.1",
-        "tslint": "^5.11.0",
-        "typescript": "^3.1.3",
-        "vscode": "^1.1.22",
+        "tslint": "^5.16.0",
+        "typescript": "^3.4.5",
         "yaml-lint": "^1.2.4"
     }
 }

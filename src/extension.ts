@@ -16,6 +16,7 @@ import { registerTypeDefinition } from "./features/type-definition";
 import { registerReferences } from "./features/references";
 import { compileActiveContract } from "./commands";
 import { registerEvents } from "./events";
+import { SolidityASTView } from "./solc-astview";
 
 import { LspManager } from "solc-lsp";
 
@@ -29,11 +30,12 @@ export function activate(context: ExtensionContext) {
 
   const diagnosticsCollection = vscode.languages.createDiagnosticCollection("Solidity");
   context.subscriptions.push(diagnosticsCollection);
+  new SolidityASTView(context, lspMgr, null);
 
   /* FIXME: these are done on the client side but may eventually be done on the LSP server side
    */
   context.subscriptions.push(commands.registerCommand("solidity.compile", () => {
-    compileActiveContract(diagnosticsCollection, lspMgr, true);
+    compileActiveContract(diagnosticsCollection, lspMgr, context, true);
   }));
 
 
@@ -49,13 +51,12 @@ export function activate(context: ExtensionContext) {
   // FIXME: After we fix up to completion routines...
   // context.subscriptions.push(provider1, provider2);
   provider1; provider2;
-  registerEvents(diagnosticsCollection, lspMgr);
+  registerEvents(diagnosticsCollection, lspMgr, context);
 
   registerSolidityHover(lspMgr);
   registerDefinition(lspMgr);
   registerTypeDefinition(lspMgr);
   registerReferences(lspMgr);
-
 
   // Use the console to output diagnostic information (console.log) and errors (console.error)
   // This line of code will only be executed once when your extension is activated
