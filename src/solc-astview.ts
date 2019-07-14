@@ -51,14 +51,16 @@ export class SolidityASTView {
       label: <vscode.TreeItemLabel>{ label: "???", "foo": void 0},
       collapsibleState: vscode.TreeItemCollapsibleState.None
     };
-    let label = `${node.nodeType} (${node.id})`;
+    let label: string = '';
     let highlights: Array<[number, number]> = [];
     if ("name" in node) {
-      highlights = [[label.length+1, label.length + node.name.length + 1]]
-      label += ` ${node.name}`;
+      highlights = [[0, node.name.length]]
+      label = `${node.name} ${node.nodeType}`;
+    } else {
+      label = node.nodeType;
     }
     return {
-      label: <vscode.TreeItemLabel>{ label, highlights},
+      label: <vscode.TreeItemLabel>{label, highlights},
       tooltip: this.lspMgr.textFromSrc(node.src),
       collapsibleState: node && node.children && node.children.length ? vscode.TreeItemCollapsibleState.Collapsed : vscode.TreeItemCollapsibleState.None
     };
