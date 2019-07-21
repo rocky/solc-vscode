@@ -9,7 +9,7 @@ all:
 #: Compile typescript to javascript
 build: compile
 compile:
-	tsc --build
+	npx tsc --build
 
 #: Lint syntax grammar
 grammar:
@@ -30,3 +30,7 @@ vscode:
 #: clear out node_modules
 clean:
 	rm -fr node_modules out || true
+
+#: Start VSCode with proposed API extension for AST Tree Viewing
+start:
+	npm run start

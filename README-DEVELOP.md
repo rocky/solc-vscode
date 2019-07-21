@@ -14,13 +14,17 @@ Perhaps you want to help work on this awesome project? Or run from the github re
 
 You need to have installed
 
-* [nodejs](https://nodejs.org/en/)
+* [nodejs](https://nodejs.org/en/). Currently node version 12 cannot be used to build a dependent package `scrypt`, so use an earlier version. See below for details
 * [npm](https://www.npmjs.com/get-npm)
 
 There are a number of nodejs packages are needed, like [typescript](https://www.typescriptlang.org/), but you can get those via `npm`,
 which is described in a below [section](#how-to-run-code-in-this-github-repository).
 
 And of course you need VSCode. Download it [here](https://code.visualstudio.com/download).
+
+## node version 12 problem
+
+Right now this code runs `solc`, and untimately that pulls in the `scrypt` package. Nodejs version 12 doesn't work with this. See https://github.com/barrysteyn/node-scrypt/issues/193\.
 
 # How to run code in this github repository
 
@@ -40,7 +44,7 @@ $
 Install dependent npm packages:
 
 ```console
-$ npm install
+$ make
 ```
 
 Now just run from inside the `solc-vscode` folder
@@ -48,6 +52,9 @@ Now just run from inside the `solc-vscode` folder
 ```
 $ code .
 ```
+
+The code uses experimental TreeView features located in `vscode.proposed.d.ts`. I have been having problems getting this recognized by tsc. So for now I have been including
+the meat of this file inside `node_modules/@types/vscode/index.d.ts`
 
 ## Running
 

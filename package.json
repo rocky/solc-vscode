@@ -5,7 +5,7 @@
     "publisher": "rocky",
     "enableProposedApi": true,
     "engines": {
-        "vscode": "^1.36.0"
+        "vscode": "^1.32.0"
     },
     "license": "MIT",
     "version": "0.0.1",
@@ -123,8 +123,9 @@
         "grammar-lint": "npx yaml-lint syntaxes/solidity.yaml",
         "lint": "tslint -p ./",
         "watch": "tsc -watch -p ./",
-        "update-vscode": "vscode-install",
-        "prepare": "npm run build"
+        "update-vscode": "node ./node_modules/vscode/bin/install",
+        "prepare": "npm run build",
+        "start": "code --enable-proposed-api rocky.vscode-solc ."
     },
     "dependencies": {
         "solc-lsp": "file:../solc-lsp",
@@ -136,6 +137,7 @@
         "js-yaml": "^3.13.1",
         "tslint": "^5.16.0",
         "typescript": "^3.4.5",
+        "vscode": "^1.1.32",
         "yaml-lint": "^1.2.4"
     }
 }

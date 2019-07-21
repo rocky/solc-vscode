@@ -47,26 +47,25 @@ export function compileActiveContract(diagnosticCollection: DiagnosticCollection
   */
 
   const uri = Uri.file(fileName);
-  const compiled = lspMgr.compile(editor.document.getText(), fileName, {});
+  lspMgr.compile(editor.document.getText(), fileName, {}).then((compiled: any) => {
 
-  // Update ASTView if we have an ast.
-  if ("sources" in compiled &&
-      fileName in compiled.sources &&
-      "ast" in compiled.sources[fileName]) {
-    const solcAstRoot = compiled.sources[fileName].ast;
-    new SolidityASTView(context, lspMgr, solcAstRoot);
-  }
+      // Update ASTView if we have an ast.
+      if ("sources" in compiled &&
+          fileName in compiled.sources &&
+          "ast" in compiled.sources[fileName]) {
+          const solcAstRoot = compiled.sources[fileName].ast;
+          new SolidityASTView(context, lspMgr, solcAstRoot);
+      }
 
-  diagnosticCollection.delete(uri);
-  if (compiled.errors) {
-    const diagnostics: Array<Diagnostic> = [];
-    for (const compiledError of compiled.errors) {
-      const diagnostic = solcErrToDiagnostic(compiledError);
-      diagnostics.push(diagnostic);
-      console.log(compiledError.formattedMessage);
-    }
-    diagnosticCollection.set(uri, diagnostics);
-  }
-  return;
-
+      diagnosticCollection.delete(uri);
+      if (compiled.errors) {
+          const diagnostics: Array<Diagnostic> = [];
+          for (const compiledError of compiled.errors) {
+              const diagnostic = solcErrToDiagnostic(compiledError);
+              diagnostics.push(diagnostic);
+              console.log(compiledError.formattedMessage);
+          }
+          diagnosticCollection.set(uri, diagnostics);
+      }
+  });
 }

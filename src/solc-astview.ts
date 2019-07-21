@@ -26,6 +26,36 @@ export interface SolcAstNode {
   parent?: SolcAstNode | null;
 }
 
+/*** These are copied from vscode.proposed.d.ts *******/
+interface TreeItemLabel {
+
+    /**
+     * A human-readable string describing the [Tree item](#TreeItem).
+     */
+    label: string;
+
+    /**
+     * Ranges in the label to highlight. A range is defined as a tuple of two number where the
+     * first is the inclusive start index and the second the exclusive end index
+     */
+    highlights?: [number, number][];
+
+}
+
+class TreeItem2 extends vscode.TreeItem {
+    /**
+     * Label describing this item. When `falsy`, it is derived from [resourceUri](#TreeItem.resourceUri).
+     */
+    label?: string | TreeItemLabel | /* for compilation */ any;
+
+    /**
+     * @param label Label describing this item
+     * @param collapsibleState [TreeItemCollapsibleState](#TreeItemCollapsibleState) of the tree item. Default is [TreeItemCollapsibleState.None](#TreeItemCollapsibleState.None)
+     */
+    // constructor(label: TreeItemLabel, collapsibleState?: TreeItemCollapsibleState);
+}
+
+/***********************************************************/
 
 
 import { LspManager } from "solc-lsp";
@@ -46,9 +76,9 @@ export class SolidityASTView {
   }
 
 
-  getTreeItem(node: SolcAstNode): vscode.TreeItem2 {
+  getTreeItem(node: SolcAstNode): TreeItem2 {
     if (!node) return {
-      label: <vscode.TreeItemLabel>{ label: "???", "foo": void 0},
+      label: <TreeItemLabel>{ label: "???", "foo": void 0},
       collapsibleState: vscode.TreeItemCollapsibleState.None
     };
     let label: string = '';
@@ -60,7 +90,7 @@ export class SolidityASTView {
       label = node.nodeType;
     }
     return {
-      label: <vscode.TreeItemLabel>{label, highlights},
+      label: <TreeItemLabel>{label, highlights},
       tooltip: this.lspMgr.textFromSrc(node.src),
       collapsibleState: node && node.children && node.children.length ? vscode.TreeItemCollapsibleState.Collapsed : vscode.TreeItemCollapsibleState.None
     };
