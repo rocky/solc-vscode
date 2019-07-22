@@ -5,7 +5,7 @@
     "publisher": "rocky",
     "enableProposedApi": true,
     "engines": {
-        "vscode": "^1.32.0"
+        "vscode": "^1.36.0"
     },
     "license": "MIT",
     "version": "0.0.1",
@@ -28,14 +28,12 @@
     ],
     "main": "./out/extension",
     "contributes": {
-        "views": {
-            "explorer": [
-                {
-                    "id": "solcAstView",
-                    "name": "Solidity AST Tree View"
-                }
-            ]
-        },
+        "commands": [
+            {
+                "command": "solidity.compile",
+                "title": "Solidity: Compile Contract"
+            }
+        ],
         "configuration": {
             "type": "object",
             "title": "Solidity configuration",
@@ -64,26 +62,21 @@
                     },
                     "default": [],
                     "description": "Compiler remappings"
+                },
+                "solidity.compileVersion": {
+                    "type": [
+                        "string",
+                        "null"
+                    ],
+                    "description": "Solidity compiler version, e.g. \"0.5.10\". Allowed strings are anythong truffle's version string allows. See https://github.com/trufflesuite/truffle/releases/tag/v5.0.0-beta.0#specify-a-solcjs-version"
                 }
             }
         },
-        "languages": [
+        "grammars": [
             {
-                "id": "solidity",
-                "aliases": [
-                    "Solidity",
-                    "solidity"
-                ],
-                "extensions": [
-                    ".sol"
-                ],
-                "configuration": "./solidity.configuration.json"
-            }
-        ],
-        "commands": [
-            {
-                "command": "solidity.compile",
-                "title": "Solidity: Compile Contract"
+                "language": "solidity",
+                "scopeName": "source.solidity",
+                "path": "./syntaxes/solidity.json"
             }
         ],
         "keybindings": [
@@ -100,19 +93,33 @@
                 "when": "editorTextFocus && editorLangId == 'solidity'"
             }
         ],
+        "languages": [
+            {
+                "id": "solidity",
+                "aliases": [
+                    "Solidity",
+                    "solidity"
+                ],
+                "extensions": [
+                    ".sol"
+                ],
+                "configuration": "./solidity.configuration.json"
+            }
+        ],
         "snippets": [
             {
                 "language": "solidity",
                 "path": "./snippets/solidity.json"
             }
         ],
-        "grammars": [
-            {
-                "language": "solidity",
-                "scopeName": "source.solidity",
-                "path": "./syntaxes/solidity.json"
-            }
-        ]
+        "views": {
+            "explorer": [
+                {
+                    "id": "solcAstView",
+                    "name": "Solidity AST Tree View"
+                }
+            ]
+        }
     },
     "icon": "images/icon.png",
     "scripts": {
@@ -133,7 +140,7 @@
     },
     "devDependencies": {
         "@types/node": "*",
-        "@types/vscode": "^1.32.0",
+        "@types/vscode": "^1.36.0",
         "js-yaml": "^3.13.1",
         "tslint": "^5.16.0",
         "typescript": "^3.4.5",

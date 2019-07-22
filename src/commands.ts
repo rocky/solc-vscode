@@ -1,11 +1,12 @@
 import * as path from "path";
 import {
-  window, /*workspace,*/
   Diagnostic,
   DiagnosticCollection,
   ExtensionContext,
   // Selection,
-  Uri
+  Uri,
+  window, /*workspace,*/
+  workspace
 } from "vscode";
 
 import { LspManager } from "solc-lsp";
@@ -34,8 +35,8 @@ export function compileActiveContract(diagnosticCollection: DiagnosticCollection
 
   const fileName = editor.document.fileName;
   if (path.extname(fileName) !== ".sol") {
-    if (warn) window.showWarningMessage(`${fileName} not a solidity file (*.sol)`);
-    return;
+	  if (warn) window.showWarningMessage(`${fileName} not a solidity file (*.sol)`);
+	  return;
   }
 
   /*
@@ -47,25 +48,44 @@ export function compileActiveContract(diagnosticCollection: DiagnosticCollection
   */
 
   const uri = Uri.file(fileName);
-  lspMgr.compile(editor.document.getText(), fileName, {}).then((compiled: any) => {
+  const contracts_directory = path.basename(fileName);
+  const truffleConfSnippet = {
+    contracts_directory,
+    compilers: {
+      solc: {
+        version: workspace.getConfiguration("solidity")
+          .get<string>("compileVersion"),
+        settings: {
+          optimizer: {
+            enabled: false,
+            runs: 0
+          }
+        }
+      }
+    }
+  };
+
+  lspMgr.compile(editor.document.getText(), fileName, {},
+                 truffleConfSnippet)
+    .then((compiled: any) => {
 
       // Update ASTView if we have an ast.
       if ("sources" in compiled &&
           fileName in compiled.sources &&
           "ast" in compiled.sources[fileName]) {
-          const solcAstRoot = compiled.sources[fileName].ast;
-          new SolidityASTView(context, lspMgr, solcAstRoot);
+        const solcAstRoot = compiled.sources[fileName].ast;
+        new SolidityASTView(context, lspMgr, solcAstRoot);
       }
 
       diagnosticCollection.delete(uri);
       if (compiled.errors) {
-          const diagnostics: Array<Diagnostic> = [];
-          for (const compiledError of compiled.errors) {
-              const diagnostic = solcErrToDiagnostic(compiledError);
-              diagnostics.push(diagnostic);
-              console.log(compiledError.formattedMessage);
-          }
-          diagnosticCollection.set(uri, diagnostics);
+        const diagnostics: Array<Diagnostic> = [];
+        for (const compiledError of compiled.errors) {
+          const diagnostic = solcErrToDiagnostic(compiledError);
+          diagnostics.push(diagnostic);
+          console.log(compiledError.formattedMessage);
+        }
+        diagnosticCollection.set(uri, diagnostics);
       }
-  });
+    });
 }
