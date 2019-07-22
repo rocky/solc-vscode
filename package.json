@@ -32,6 +32,10 @@
             {
                 "command": "solidity.compile",
                 "title": "Solidity: Compile Contract"
+            },
+            {
+                "command": "solidity.astViewSelect",
+                "title": "Solidity: show source associated with Solc AST Node"
             }
         ],
         "configuration": {
@@ -106,6 +110,13 @@
                 "configuration": "./solidity.configuration.json"
             }
         ],
+	"menus": {
+	    "view/item/context": [
+		{
+		    "command": "solidity.astViewSelect",
+		    "when": "view == solcAstView"
+		}]
+	},
         "snippets": [
             {
                 "language": "solidity",

@@ -10,8 +10,10 @@ import * as vscode from "vscode";
 
 import { registerSolidityHover } from "./features/hover";
 import { registerDefinition } from "./features/definitions";
-import { solcCompletionItemsProvider,
-         solcCompletionItemsProviderDot } from "./features/completions";
+import {
+  solcCompletionItemsProvider,
+  solcCompletionItemsProviderDot
+} from "./features/completions";
 import { registerTypeDefinition } from "./features/type-definition";
 import { registerReferences } from "./features/references";
 import { compileActiveContract } from "./commands";
@@ -32,8 +34,15 @@ export function activate(context: ExtensionContext) {
   context.subscriptions.push(diagnosticsCollection);
   new SolidityASTView(context, lspMgr, null);
 
-  /* FIXME: these are done on the client side but may eventually be done on the LSP server side
+  /* We push on to "subscriptions" so that commands can have a "destroy" callback.
+
+     Some the commands like "compile" right now are handled on the client side.
+     Eventually we do more on the language-server or LSP side.
    */
+  context.subscriptions.push(commands.registerCommand("solidity.astViewSelect", () => {
+    console.log("Hi, Rocky");
+  }));
+
   context.subscriptions.push(commands.registerCommand("solidity.compile", () => {
     compileActiveContract(diagnosticsCollection, lspMgr, context, true);
   }));
@@ -55,7 +64,7 @@ export function activate(context: ExtensionContext) {
   const provider2 = vscode.languages.registerCompletionItemProvider(
     { scheme: "file", language: "solidity" }, solcCompletionItemsProviderDot,
     "." // triggered whenever a '.' is being typed
-    );
+  );
 
   // FIXME: After we fix up to completion routines...
   // context.subscriptions.push(provider1, provider2);
@@ -77,5 +86,5 @@ export function activate(context: ExtensionContext) {
 
 // this method is called when your extension is deactivated
 export function deactivate() {
-    // Nothing here - move along
+  // Nothing here - move along
 }
