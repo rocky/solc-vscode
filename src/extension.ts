@@ -18,7 +18,7 @@ import { registerTypeDefinition } from "./features/type-definition";
 import { registerReferences } from "./features/references";
 import { compileActiveContract } from "./commands";
 import { registerEvents } from "./events";
-import { SolidityASTView } from "./solc-astview";
+import { SolidityASTView, TreeItem2 } from "./solc-astview";
 
 import { LspManager } from "solc-lsp";
 
@@ -30,19 +30,19 @@ const lspMgr = new LspManager(lspConfig);
 export function activate(context: ExtensionContext) {
 
 
-  const diagnosticsCollection = vscode.languages.createDiagnosticCollection("Solidity");
-  context.subscriptions.push(diagnosticsCollection);
-  new SolidityASTView(context, lspMgr, null);
-
   /* We push on to "subscriptions" so that commands can have a "destroy" callback.
 
      Some the commands like "compile" right now are handled on the client side.
      Eventually we do more on the language-server or LSP side.
    */
-  context.subscriptions.push(commands.registerCommand("solidity.astViewSelect", () => {
-    console.log("Hi, Rocky");
-    compileActiveContract(diagnosticsCollection, lspMgr, context, true);
-  }));
+  const diagnosticsCollection = vscode.languages.createDiagnosticCollection("Solidity");
+  context.subscriptions.push(diagnosticsCollection);
+
+  const astView = new SolidityASTView(context, lspMgr, null);
+
+  commands.registerCommand("solidity.astView.selectNode", (item: TreeItem2) => {
+    astView.selectTreeItemToggle(item);
+  });
 
   context.subscriptions.push(commands.registerCommand("solidity.compile", () => {
     compileActiveContract(diagnosticsCollection, lspMgr, context, true);

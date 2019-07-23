@@ -15,7 +15,7 @@ export function registerDefinition(lspMgr: LspManager) {
                        ) {
 	      if (cancelToken.isCancellationRequested) return [];
         /* FIXME: DRY with type-definition.ts code */
-       const filePath = document.uri.fsPath;
+        const filePath = document.uri.fsPath;
         const tup = lspMgr.solcAstNodeFromLineColPosition(filePath, position);
         if (!tup) return [];
         const finfo = tup[0];

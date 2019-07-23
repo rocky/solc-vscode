@@ -1,7 +1,8 @@
 import * as vscode from 'vscode';
 
 import {
-  ExtensionContext
+  ExtensionContext,
+  window
 } from "vscode";
 
 // FIXME: figure out how to export
@@ -42,7 +43,7 @@ interface TreeItemLabel {
 
 }
 
-class TreeItem2 extends vscode.TreeItem {
+export class TreeItem2 extends vscode.TreeItem {
     /**
      * Label describing this item. When `falsy`, it is derived from [resourceUri](#TreeItem.resourceUri).
      */
@@ -60,10 +61,35 @@ class TreeItem2 extends vscode.TreeItem {
 
 import { LspManager } from "solc-lsp";
 
+// Keyed by external filename, we keep track of the ast Roots
+const astRoots: any = {};
+
+// create a decorator type that we use to show AST range associations
+export const astRangeDecorationType = vscode.window.createTextEditorDecorationType({
+	borderWidth: '1px',
+	borderStyle: 'solid',
+	overviewRulerColor: 'blue',
+	overviewRulerLane: vscode.OverviewRulerLane.Right,
+	light: {
+		// this color will be used in light color themes
+		borderColor: 'darkblue'
+	},
+	dark: {
+		// this color will be used in dark color themes
+		borderColor: 'lightblue'
+	}
+});
+
 export class SolidityASTView {
 
   astRoot: SolcAstNode | null;
   lspMgr: LspManager;
+
+  // Mapping from Solc AST id to solc AST node.
+  id2Node: any = {};
+
+  // Last selected tree node. Used in toggling highlighted source region.
+  lastSelected: string = '';
 
   constructor(context: ExtensionContext,
               lspMgr: LspManager, astRoot: SolcAstNode | null) {
@@ -72,7 +98,12 @@ export class SolidityASTView {
     });
     this.lspMgr = lspMgr;
     this.astRoot = astRoot;
+    if (astRoot !== null && astRoot.absolutePath !== undefined)
+      astRoots[astRoot.absolutePath] = this;
+
+    // Bogus use of variables to keep typescript compiler happy.
     view; context;
+
   }
 
 
@@ -89,11 +120,26 @@ export class SolidityASTView {
     } else {
       label = node.nodeType;
     }
-    return {
+
+    const idStr = node.id.toString();
+    this.id2Node[idStr] = node;
+    const item: TreeItem2 = {
       label: <TreeItemLabel>{label, highlights},
       tooltip: this.lspMgr.textFromSrc(node.src),
-      collapsibleState: node && node.children && node.children.length ? vscode.TreeItemCollapsibleState.Collapsed : vscode.TreeItemCollapsibleState.None
+      collapsibleState: (node && node.children && node.children.length)
+        ? vscode.TreeItemCollapsibleState.Collapsed : vscode.TreeItemCollapsibleState.None
     };
+
+    if (this.astRoot !== null) {
+      item.id = `${idStr} ${this.astRoot.absolutePath}`;
+    }
+
+    item.command = {
+      command: "solidity.astView.selectNode",
+      title: "SelectNode",
+      arguments: [item]
+    }
+    return item;
   }
 
   aNodeWithIdTreeDataProvider(): vscode.TreeDataProvider<SolcAstNode> {
@@ -103,7 +149,6 @@ export class SolidityASTView {
       },
       getTreeItem: (element: SolcAstNode): vscode.TreeItem => {
         const treeItem = this.getTreeItem(element);
-        treeItem.id = element.key;
         return treeItem;
       },
       getParent: (element: SolcAstNode): SolcAstNode | null | undefined => {
@@ -119,6 +164,33 @@ export class SolidityASTView {
     }
     if (astItem.children) return astItem.children;
     return [];
+  }
+
+  selectTreeItemToggle(item: TreeItem2) {
+    if (item.id === undefined) return;
+
+    // FIXME: Don't assume activeTextEditor
+	  const activeEditor = window.activeTextEditor;
+    if (!activeEditor) return;
+
+    // FIXME: Split should split on 1st blank only and preserve other blanks
+    const [id, astRoot] = item.id.split(" ");
+
+    if (!(astRoot in astRoots)) return;
+    const self = astRoots[astRoot];
+    if (self.lastSelected == item.id) {
+		  activeEditor.setDecorations(astRangeDecorationType, []);
+      return;
+    }
+    const node = self.id2Node[id];
+    const fileIndex = node.src.split(":")[2];
+    const filePath = self.lspMgr.fileInfo.sourceList[fileIndex];
+    const finfo = self.lspMgr.fileInfo[filePath];
+    const targetRange = finfo.sourceMapping.lineColRangeFromSrc(node.src, 0, 0);
+		const decoration = { range: targetRange, hoverMessage: `Span for ${item.label.label}` };
+
+		activeEditor.setDecorations(astRangeDecorationType, [decoration]);
+    self.lastSelected = item.id;
   }
 
 }
