@@ -127,7 +127,7 @@
             "explorer": [
                 {
                     "id": "solcAstView",
-                    "name": "Solidity AST Tree View"
+                    "name": "Solidity AST Tree"
                 }
             ]
         }

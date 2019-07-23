@@ -41,6 +41,7 @@ export function activate(context: ExtensionContext) {
    */
   context.subscriptions.push(commands.registerCommand("solidity.astViewSelect", () => {
     console.log("Hi, Rocky");
+    compileActiveContract(diagnosticsCollection, lspMgr, context, true);
   }));
 
   context.subscriptions.push(commands.registerCommand("solidity.compile", () => {

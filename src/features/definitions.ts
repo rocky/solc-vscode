@@ -11,10 +11,11 @@ export function registerDefinition(lspMgr: LspManager) {
     { scheme: "file", language: "solidity" },
     {
       provideDefinition(document: vscode.TextDocument, position: vscode.Position,
-			cancelToken: vscode.CancellationToken
-      ) {
-	if (cancelToken.isCancellationRequested) return [];
-        const filePath = document.uri.fsPath;
+			                  cancelToken: vscode.CancellationToken
+                       ) {
+	      if (cancelToken.isCancellationRequested) return [];
+        /* FIXME: DRY with type-definition.ts code */
+       const filePath = document.uri.fsPath;
         const tup = lspMgr.solcAstNodeFromLineColPosition(filePath, position);
         if (!tup) return [];
         const finfo = tup[0];
@@ -22,13 +23,16 @@ export function registerDefinition(lspMgr: LspManager) {
         const defNode = getDefinitionNodeFromSolcNode(finfo.staticInfo, queryNode);
         if (defNode === null) return [];
         const originSelectionRange = finfo.sourceMapping.lineColRangeFromSrc(queryNode.src,
-          0, 0);
+                                                                             0, 0);
+        // FIXME: encapsulate the below in a function
         const targetRange = finfo.sourceMapping.lineColRangeFromSrc(defNode.src, 0, 0);
+        const defPath = finfo.sourceList[defNode.src.split(":")[2]]
+
+        if (!(originSelectionRange && defPath)) return [];
         return [<vscode.DefinitionLink>{
           originSelectionRange,
           targetRange,
-          targetUri: document.uri, /* FIXME: Not quite right */
-
+          targetUri: vscode.Uri.file(defPath)
         }];
       }
     });

@@ -9,7 +9,8 @@ export function registerTypeDefinition(lspMgr: LspManager) {
 			    cancelToken: vscode.CancellationToken
 
       ) {
-	if (cancelToken.isCancellationRequested) return [];
+	      if (cancelToken.isCancellationRequested) return [];
+        /* FIXME: DRY with definition.ts code */
         const filePath = document.uri.fsPath;
         const tup = lspMgr.solcAstNodeFromLineColPosition(filePath, position);
         if (!tup) return [];
@@ -18,13 +19,17 @@ export function registerTypeDefinition(lspMgr: LspManager) {
         const defNode = getTypeDefinitionNodeFromSolcNode(finfo.staticInfo, queryNode);
         if (defNode === null) return [];
         const originSelectionRange = finfo.sourceMapping.lineColRangeFromSrc(queryNode.src,
-          0, 0);
+                                                                             0, 0);
+        // FIXME: encapsulate the below in a function
         const targetRange = finfo.sourceMapping.lineColRangeFromSrc(defNode.src, 0, 0);
+        const defPath = finfo.sourceList[defNode.src.split(":")[2]]
+
+        if (!(originSelectionRange && defPath)) return [];
+
         return [<vscode.DefinitionLink>{
           originSelectionRange,
           targetRange,
-          targetUri: document.uri, /* FIXME: Not quite right */
-
+          targetUri: vscode.Uri.file(defPath)
         }];
       }
     });
