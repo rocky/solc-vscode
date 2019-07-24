@@ -180,6 +180,7 @@ export class SolidityASTView {
     const self = astRoots[astRoot];
     if (self.lastSelected == item.id) {
 		  activeEditor.setDecorations(astRangeDecorationType, []);
+      self.lastSelected = null;
       return;
     }
     const node = self.id2Node[id];

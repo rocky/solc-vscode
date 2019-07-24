@@ -16,7 +16,7 @@ import {
 } from "./features/completions";
 import { registerTypeDefinition } from "./features/type-definition";
 import { registerReferences } from "./features/references";
-import { compileActiveContract } from "./commands";
+import { solcCompileActive, solcCompileActiveFull } from "./commands";
 import { registerEvents } from "./events";
 import { SolidityASTView, TreeItem2 } from "./solc-astview";
 
@@ -44,8 +44,12 @@ export function activate(context: ExtensionContext) {
     astView.selectTreeItemToggle(item);
   });
 
-  context.subscriptions.push(commands.registerCommand("solidity.compile", () => {
-    compileActiveContract(diagnosticsCollection, lspMgr, context, true);
+  context.subscriptions.push(commands.registerCommand("solidity.compile.quick", () => {
+    solcCompileActive(diagnosticsCollection, lspMgr, context, true);
+  }));
+
+  context.subscriptions.push(commands.registerCommand("solidity.compile.full", () => {
+    solcCompileActiveFull(diagnosticsCollection, lspMgr, context, true);
   }));
 
 

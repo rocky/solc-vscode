@@ -23,10 +23,18 @@ import { SolidityASTView } from "./solc-astview";
 //   );
 // }
 
+const solcCompileQuickDefault = {
+  settings: {
+    optimizer: {
+      enabled: false,
+      runs: 0
+    }
+  }
+}
 
-export function compileActiveContract(diagnosticCollection: DiagnosticCollection,
-                                      lspMgr: LspManager, context: ExtensionContext,
-                                      warn: boolean) {
+export function solcCompileActive(diagnosticCollection: DiagnosticCollection,
+                                 lspMgr: LspManager, context: ExtensionContext,
+                                 warn: boolean, solcCompileSettings: any = {}) {
 
   const editor = window.activeTextEditor;
   if (!editor) {
@@ -49,18 +57,14 @@ export function compileActiveContract(diagnosticCollection: DiagnosticCollection
 
   const uri = Uri.file(fileName);
   const contracts_directory = path.basename(fileName);
+  const settings = {...solcCompileQuickDefault, ...solcCompileSettings };
   const truffleConfSnippet = {
     contracts_directory,
     compilers: {
       solc: {
         version: workspace.getConfiguration("solidity")
           .get<string>("compileVersion"),
-        settings: {
-          optimizer: {
-            enabled: false,
-            runs: 0
-          }
-        }
+        settings
       }
     }
   };
@@ -88,4 +92,17 @@ export function compileActiveContract(diagnosticCollection: DiagnosticCollection
         diagnosticCollection.set(uri, diagnostics);
       }
     });
+}
+
+export function solcCompileActiveFull(diagnosticCollection: DiagnosticCollection,
+                                      lspMgr: LspManager, context: ExtensionContext,
+                                      warn: boolean, solcCompileSettings: any = {}) {
+  const settings = {
+    optimizer: {
+      enabled: true,
+      runs: 200
+    },
+    ... solcCompileSettings
+  };
+  solcCompileActive(diagnosticCollection, lspMgr, context, warn, settings);
 }

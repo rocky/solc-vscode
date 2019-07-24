@@ -24,14 +24,18 @@
         "onView:solcAstView",
         "onCommand:solidity.reveal",
         "onLanguage:solidity",
-        "onCommand:solidity.compile"
+        "onCommand:solidity.compile.quick"
     ],
     "main": "./out/extension",
     "contributes": {
         "commands": [
             {
-                "command": "solidity.compile",
-                "title": "Solidity: Compile Contract"
+                "command": "solidity.compile.quick",
+                "title": "Solidity: Compile Contract - quick up to AST"
+            },
+            {
+                "command": "solidity.compile.full",
+                "title": "Solidity: Compile Contract - optimize and generate code"
             }
         ],
         "configuration": {
@@ -81,13 +85,13 @@
         ],
         "keybindings": [
             {
-                "command": "solidity.compile",
+                "command": "solidity.compile.quick",
                 "key": "f5",
                 "mac": "f5",
                 "when": "editorTextFocus && editorLangId == 'solidity'"
             },
             {
-                "command": "solidity.compile",
+                "command": "solidity.compile.full",
                 "key": "Ctrl+f5",
                 "mac": "Cmd+f5",
                 "when": "editorTextFocus && editorLangId == 'solidity'"
