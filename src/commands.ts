@@ -24,11 +24,9 @@ import { SolidityASTView } from "./solc-astview";
 // }
 
 const solcCompileQuickDefault = {
-  settings: {
-    optimizer: {
-      enabled: false,
-      runs: 0
-    }
+  optimizer: {
+    enabled: false,
+    runs: 0
   }
 }
 
@@ -69,8 +67,7 @@ export function solcCompileActive(diagnosticCollection: DiagnosticCollection,
     }
   };
 
-  lspMgr.compile(editor.document.getText(), fileName, {},
-                 truffleConfSnippet)
+  lspMgr.compile(editor.document.getText(), fileName, {}, truffleConfSnippet)
     .then((compiled: any) => {
 
       // Update ASTView if we have an ast.
@@ -98,6 +95,11 @@ export function solcCompileActiveFull(diagnosticCollection: DiagnosticCollection
                                       lspMgr: LspManager, context: ExtensionContext,
                                       warn: boolean, solcCompileSettings: any = {}) {
   const settings = {
+    outputSelection: {
+      "*": {
+        "*": [ "*" ]
+      }
+    },
     optimizer: {
       enabled: true,
       runs: 200
