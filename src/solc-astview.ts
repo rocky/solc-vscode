@@ -88,6 +88,9 @@ export class SolidityASTView {
   // Mapping from Solc AST id to solc AST node.
   id2Node: any = {};
 
+  // Mapping from Solc AST id to Treeview AST node.
+  id2TreeItem: any = {};
+
   // Last selected tree node. Used in toggling highlighted source region.
   lastSelected: string = '';
 
@@ -107,7 +110,7 @@ export class SolidityASTView {
   }
 
 
-  getTreeItem(node: SolcAstNode): TreeItem2 {
+  createTreeItem(node: SolcAstNode): TreeItem2 {
     if (!node) return {
       label: <TreeItemLabel>{ label: "???", "foo": void 0},
       collapsibleState: vscode.TreeItemCollapsibleState.None
@@ -139,6 +142,7 @@ export class SolidityASTView {
       title: "SelectNode",
       arguments: [item]
     }
+    this.id2TreeItem[node.id] = item;
     return item;
   }
 
@@ -148,7 +152,7 @@ export class SolidityASTView {
         return this.getChildren(element);
       },
       getTreeItem: (element: SolcAstNode): vscode.TreeItem => {
-        const treeItem = this.getTreeItem(element);
+        const treeItem = this.createTreeItem(element);
         return treeItem;
       },
       getParent: (element: SolcAstNode): SolcAstNode | null | undefined => {
@@ -194,4 +198,42 @@ export class SolidityASTView {
     self.lastSelected = item.id;
   }
 
+}
+
+export function revealAST(lspMgr: LspManager) {
+  /* FIXME: DRY with type-definition.ts code */
+  const editor = window.activeTextEditor;
+  if (!editor) {
+    return; // We need something open
+  }
+
+  const fileName = editor.document.fileName;
+  const astRoot = astRoots[fileName];
+  if (!astRoot) return;
+
+  const position = editor.selection.active;
+  const tup = lspMgr.solcAstNodeFromLineColPosition(fileName, position);
+  if (!tup) return [];
+  const revealNode = tup[1];
+  if (revealNode === null) return [];
+  const parents: Array<number> = [];
+  let n = revealNode;
+
+  /* Expand parents if they are not already expanded. */
+  while (!(n.id in astRoot.id2TreeItem) && n.parent) {
+    parents.push(n.id);
+    n = n.parent;
+  }
+  for (const id of parents) {
+    if (id in astRoot.id2TreeItem) {
+      const treeItem = astRoot.id2TreeItem[id];
+      treeItem.collabsibleState = vscode.TreeItemCollapsibleState.Expanded;
+    }
+  }
+
+  const treeItem = astRoot.id2TreeItem[revealNode.id];
+  if (treeItem) {
+    treeItem.collabsibleState = vscode.TreeItemCollapsibleState.Expanded;
+    astRoot.selectTreeItemToggle(treeItem);
+  }
 }

@@ -36,6 +36,10 @@
             {
                 "command": "solidity.compile.full",
                 "title": "Solidity: Compile Contract - optimize and generate code"
+            },
+            {
+                "command": "solidity.revealAST",
+		"title": "Solidity: Show corresponding AST node for current item"
             }
         ],
         "configuration": {
