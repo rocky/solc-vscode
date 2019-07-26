@@ -54,7 +54,7 @@ export function solcCompileActive(diagnosticCollection: DiagnosticCollection,
   */
 
   const uri = Uri.file(fileName);
-  const contracts_directory = path.basename(fileName);
+  const contracts_directory = path.dirname(fileName);
   const settings = {...solcCompileQuickDefault, ...solcCompileSettings };
   const truffleConfSnippet = {
     contracts_directory,
