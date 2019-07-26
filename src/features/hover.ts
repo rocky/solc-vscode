@@ -1,22 +1,36 @@
 /* A placeholder for a hover provider for Solidity */
 
 import * as vscode from "vscode";
-import { LspManager } from "solc-lsp";
+import { LspManager,
+         // solcRangeFromLineColRange
+       } from "solc-lsp";
+// import { SolcAstNode } from "../solc-astview";
+
 export function registerSolidityHover(lspMgr: LspManager) {
   vscode.languages.registerHoverProvider(
     { scheme: "file", language: "solidity" },
     {
       provideHover(document: vscode.TextDocument, position: vscode.Position,
-        token: vscode.CancellationToken) {
-        const filepath = document.uri.fsPath;
-        if (filepath in lspMgr.fileInfo) {
-          const info = lspMgr.fileInfo[filepath];
+        cancelToken: vscode.CancellationToken) {
+        const filePath = document.uri.fsPath;
+        if (filePath in lspMgr.fileInfo) {
+          const info = lspMgr.fileInfo[filePath];
           const staticInfo = info.staticInfo;
+
+          // const editor = vscode.window.activeTextEditor;
+          // let node: SolcAstNode | null;
+          // if (editor) {
+          //   const solcRange = solcRangeFromLineColRange(editor.selection, lspMgr.fileInfo[filePath].sourceMapping.lineBreaks);
+          //   node = staticInfo.solcRangeToAstNode(solcRange);
+          // } else {
+          //   const solcOffset = info.sourceMapping.offsetFromLineColPosition(position);
+          //   node = staticInfo.offsetToAstNode(solcOffset);
+          // }
           const solcOffset = info.sourceMapping.offsetFromLineColPosition(position);
-        const node = staticInfo.offsetToAstNode(solcOffset);
+          const node = staticInfo.offsetToAstNode(solcOffset);
           let mess: string;
           if (node) {
-            token;
+            if (cancelToken.isCancellationRequested) return undefined;
             if (node.typeName && node.typeName.name) {
               mess = `<${node.nodeType}>, type: ${node.typeName.name}`;
             } else if (node.typeDescriptions && node.typeDescriptions.typeString) {

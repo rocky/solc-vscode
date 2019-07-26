@@ -22,8 +22,7 @@ import { revealAST, SolidityASTView, TreeItem2 } from "./solc-astview";
 
 import { LspManager } from "solc-lsp";
 
-const lspConfig = {};
-const lspMgr = new LspManager(lspConfig);
+const lspMgr = new LspManager();
 
 // this method is called when your extension is activated
 // your extension is activated the very first time the command is executed

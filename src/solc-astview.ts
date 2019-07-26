@@ -5,6 +5,8 @@ import {
   window
 } from "vscode";
 
+import { solcRangeFromLineColRange } from "solc-lsp";
+
 // FIXME: figure out how to export
 export interface SolcAstNode {
   /* The following attributes are essential, and indicates an that object
@@ -211,13 +213,14 @@ export function revealAST(lspMgr: LspManager) {
   const astRoot = astRoots[fileName];
   if (!astRoot) return;
 
-  const position = editor.selection.active;
-  const tup = lspMgr.solcAstNodeFromLineColPosition(fileName, position);
-  if (!tup) return [];
-  const revealNode = tup[1];
-  if (revealNode === null) return [];
+  if (!editor.selection) return;
+  if (!lspMgr.fileInfo[fileName]) return;
+
+  const solcRange = solcRangeFromLineColRange(editor.selection, lspMgr.fileInfo[fileName].sourceMapping.lineBreaks);
+  const revealAstNode = lspMgr.solcAstNodeFromSolcRange(solcRange);
+  if (revealAstNode === null) return;
   const parents: Array<number> = [];
-  let n = revealNode;
+  let n = revealAstNode;
 
   /* Expand parents if they are not already expanded. */
   while (!(n.id in astRoot.id2TreeItem) && n.parent) {
@@ -225,13 +228,14 @@ export function revealAST(lspMgr: LspManager) {
     n = n.parent;
   }
   for (const id of parents) {
-    if (id in astRoot.id2TreeItem) {
-      const treeItem = astRoot.id2TreeItem[id];
+    const strId = id.toString();
+    if (strId in astRoot.id2TreeItem) {
+      const treeItem = astRoot.id2TreeItem[strId];
       treeItem.collabsibleState = vscode.TreeItemCollapsibleState.Expanded;
     }
   }
 
-  const treeItem = astRoot.id2TreeItem[revealNode.id];
+  const treeItem = astRoot.id2TreeItem[revealAstNode.id.toString()];
   if (treeItem) {
     treeItem.collabsibleState = vscode.TreeItemCollapsibleState.Expanded;
     astRoot.selectTreeItemToggle(treeItem);

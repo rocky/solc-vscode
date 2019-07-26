@@ -39,7 +39,7 @@
             },
             {
                 "command": "solidity.revealAST",
-		"title": "Solidity: Show corresponding AST node for current item"
+                "title": "Solidity: Toggle corresponding AST text span for current item"
             }
         ],
         "configuration": {
