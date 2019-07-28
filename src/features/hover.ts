@@ -1,17 +1,20 @@
 /* A placeholder for a hover provider for Solidity */
 
-import * as vscode from "vscode";
+import {
+  CancellationToken, Hover, languages, MarkdownString,
+  Position, TextDocument
+} from "vscode";
 import { LspManager,
          // solcRangeFromLineColRange
        } from "solc-lsp";
 // import { SolcAstNode } from "../solc-astview";
 
 export function registerSolidityHover(lspMgr: LspManager) {
-  vscode.languages.registerHoverProvider(
+  languages.registerHoverProvider(
     { scheme: "file", language: "solidity" },
     {
-      provideHover(document: vscode.TextDocument, position: vscode.Position,
-        cancelToken: vscode.CancellationToken) {
+      provideHover(document: TextDocument, position: Position,
+        cancelToken: CancellationToken) {
         const filePath = document.uri.fsPath;
         if (filePath in lspMgr.fileInfo) {
           const info = lspMgr.fileInfo[filePath];
@@ -32,14 +35,14 @@ export function registerSolidityHover(lspMgr: LspManager) {
           if (node) {
             if (cancelToken.isCancellationRequested) return undefined;
             if (node.typeName && node.typeName.name) {
-              mess = `<${node.nodeType}>, type: ${node.typeName.name}`;
+              mess = `_${node.nodeType}_\n\n---\n\ntype: \`${node.typeName.name}\``;
             } else if (node.typeDescriptions && node.typeDescriptions.typeString) {
-              mess = `<${node.nodeType}>; type description: ${node.typeDescriptions.typeString}`;
+              mess = `_${node.nodeType}_\n\n---\n\ntype description: \`${node.typeDescriptions.typeString}\``;
             } else {
-              mess = `<${node.nodeType}>`;
+              mess = `_${node.nodeType}_`;
               // console.log(util.inspect(node));
             }
-            return new vscode.Hover(mess);
+            return new Hover(new MarkdownString(mess));
           }
         }
         return undefined;

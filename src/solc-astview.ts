@@ -1,7 +1,10 @@
 import * as vscode from 'vscode';
 
 import {
+  Command,
   ExtensionContext,
+  TreeItem,
+  TreeItemCollapsibleState,
   window
 } from "vscode";
 
@@ -45,13 +48,18 @@ interface TreeItemLabel {
 
 }
 
-export class TreeItem2 extends vscode.TreeItem {
+/* This should not be needed, but vscode isn't picking this stuff up */
+export class TreeItem2 extends TreeItem {
     /**
      * Label describing this item. When `falsy`, it is derived from [resourceUri](#TreeItem.resourceUri).
      */
     label?: string | TreeItemLabel | /* for compilation */ any;
+	  id?: string;
+		collapsibleState?: TreeItemCollapsibleState;
+		command?: Command;
+		tooltip?: string | undefined;
 
-    /**
+  /**
      * @param label Label describing this item
      * @param collapsibleState [TreeItemCollapsibleState](#TreeItemCollapsibleState) of the tree item. Default is [TreeItemCollapsibleState.None](#TreeItemCollapsibleState.None)
      */
@@ -99,7 +107,8 @@ export class SolidityASTView {
   constructor(context: ExtensionContext,
               lspMgr: LspManager, astRoot: SolcAstNode | null) {
     const view = vscode.window.createTreeView("solcAstView", {
-      treeDataProvider: this.aNodeWithIdTreeDataProvider(), showCollapseAll: true
+      treeDataProvider: this.aNodeWithIdTreeDataProvider(),
+      showCollapseAll: true,
     });
     this.lspMgr = lspMgr;
     this.astRoot = astRoot;
