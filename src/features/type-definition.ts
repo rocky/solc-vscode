@@ -1,12 +1,13 @@
-import * as vscode from "vscode";
+import { CancellationToken, DefinitionLink, languages, Position, TextDocument, Uri } from "vscode";
+
 import { getTypeDefinitionNodeFromSolcNode, LspManager } from "solc-lsp";
 
 export function registerTypeDefinition(lspMgr: LspManager) {
-  vscode.languages.registerTypeDefinitionProvider(
+  languages.registerTypeDefinitionProvider(
     { scheme: "file", language: "solidity" },
     {
-      provideTypeDefinition(document: vscode.TextDocument, position: vscode.Position,
-			    cancelToken: vscode.CancellationToken
+      provideTypeDefinition(document: TextDocument, position: Position,
+			    cancelToken: CancellationToken
 
       ) {
 	      if (cancelToken.isCancellationRequested) return [];
@@ -17,19 +18,21 @@ export function registerTypeDefinition(lspMgr: LspManager) {
         const finfo = tup[0];
         const queryNode = tup[1];
         const defNode = getTypeDefinitionNodeFromSolcNode(finfo.staticInfo, queryNode);
+
         if (defNode === null) return [];
         const originSelectionRange = finfo.sourceMapping.lineColRangeFromSrc(queryNode.src,
                                                                              0, 0);
         // FIXME: encapsulate the below in a function
-        const targetRange = finfo.sourceMapping.lineColRangeFromSrc(defNode.src, 0, 0);
         const defPath = finfo.sourceList[defNode.src.split(":")[2]]
+        const defFinfo = lspMgr.fileInfo[defPath];
+        const targetRange = defFinfo.sourceMapping.lineColRangeFromSrc(defNode.src, 0, 0);
 
         if (!(originSelectionRange && defPath)) return [];
 
-        return [<vscode.DefinitionLink>{
+        return [<DefinitionLink>{
           originSelectionRange,
           targetRange,
-          targetUri: vscode.Uri.file(defPath)
+          targetUri: Uri.file(defPath)
         }];
       }
     });
