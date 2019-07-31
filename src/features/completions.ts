@@ -187,6 +187,23 @@ export function getAllCompletions(finfo: FileInfo, text: string): CompletionItem
   return completions;
 }
 
+const arrayMembers = ["length", "pop()", "push("].map(e => {
+      return {
+        detail: `Array member`,
+        kind: CompletionItemKind.Method,
+        label: e
+      }
+});
+
+const bytesMembers = ["pop()"].map(e => {
+      return {
+        detail: `bytes variable`,
+        kind: CompletionItemKind.Method,
+        label: e
+      }
+    });
+
+
 const endWordRegex = /[A-Za-z_][A-Za-z0-9_]*$/;
 /**
  * Find completions that can follow a ".". We use the word before as context for member names.
@@ -214,9 +231,10 @@ export function getCompletionsAfterDot(finfo: FileInfo, lineText: string, dotOff
         label: e
       }
     });
-  } else if (word in finfo.staticInfo.array) {
-    // FIXME: fill in
-    return [];
+  } else if (finfo.staticInfo.arrays.has(word)) {
+    return arrayMembers;
+  } else if (finfo.staticInfo.bytes.has(word)) {
+    return bytesMembers;
   } else {
     return [];
   }
