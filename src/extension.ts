@@ -2,8 +2,13 @@
 // Import the module and reference it with the alias vscode in your code below
 
 import {
+  CancellationToken,
+  CompletionContext,
+  CompletionItem,
   commands, /* workspace, WorkspaceFolder, */
-  ExtensionContext
+  ExtensionContext,
+  Position,
+  TextDocument
 } from "vscode";
 import * as vscode from "vscode";
 // import { inspect } from "util";
@@ -12,7 +17,7 @@ import { registerSolidityHover } from "./features/hover";
 import { registerDefinition } from "./features/definitions";
 import {
   solcCompletionItemsProvider,
-  solcCompletionItemsProviderDot
+  solcCompletionItemsAfterDotProvider
 } from "./features/completions";
 import { registerTypeDefinition } from "./features/type-definition";
 import { registerReferences } from "./features/references";
@@ -55,18 +60,40 @@ export function activate(context: ExtensionContext) {
     revealAST(lspMgr);
   });
 
+  /****** IntelliSense command completion ***************************/
   const provider1 = vscode.languages.registerCompletionItemProvider(
-    { scheme: "file", language: "solidity" }, solcCompletionItemsProvider);
+    { scheme: "file", language: "solidity" },
+    { provideCompletionItems:
+      function(document: TextDocument,
+               position: Position, cancelToken: CancellationToken,
+			         context: CompletionContext): CompletionItem[] {
+        return solcCompletionItemsProvider(lspMgr, document,  position, cancelToken,
+                                           context);
 
+      }
+      // No resolveCompletionItem for now
+    }
+  );
 
   const provider2 = vscode.languages.registerCompletionItemProvider(
-    { scheme: "file", language: "solidity" }, solcCompletionItemsProviderDot,
+    { scheme: "file", language: "solidity" },
+    { provideCompletionItems:
+      function(document: TextDocument,
+               position: Position, cancelToken: CancellationToken,
+			         context: CompletionContext): CompletionItem[] {
+        return solcCompletionItemsAfterDotProvider(lspMgr, document,  position, cancelToken,
+                                                   context);
+      }
+      // No resolveCompletionItem for now
+    },
     "." // triggered whenever a '.' is being typed
   );
 
-  // FIXME: After we fix up to completion routines...
-  // context.subscriptions.push(provider1, provider2);
+  context.subscriptions.push(provider1, provider2);
   provider1; provider2;
+
+  /****** End IntelliSense command completion ***********************/
+
   registerEvents(diagnosticsCollection, lspMgr, context);
 
   registerSolidityHover(lspMgr);

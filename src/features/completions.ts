@@ -3,118 +3,123 @@ import {
   CompletionContext,
   CompletionItem,
   CompletionItemKind,
+  CompletionTriggerKind,
   Position,
   TextDocument,
 } from "vscode";
 
+import { FileInfo, LspManager } from "solc-lsp";
 // import { LanguageServiceHost } from "./types";
 
 const solparse = require("solparse");
 
-function getGlobalFunctionCompletions(): CompletionItem[] {
-    return [
-        {
-            detail: "assert(bool condition): throws if the condition is not met - to be used for internal errors.",
-            insertText: "assert(${1:condition});",
-            kind: CompletionItemKind.Function,
-            label: "assert",
-        },
-        {
-            detail: "require(bool condition): throws if the condition is not met - to be used for errors in inputs or external components.",
-            insertText: "require(${1:condition});",
-            kind: CompletionItemKind.Method,
-            label: "require",
-        },
-        {
-            detail: "revert(): abort execution and revert state changes",
-            insertText: "revert();",
-            kind: CompletionItemKind.Method,
-            label: "revert",
-        },
-        {
-            detail: "addmod(uint x, uint y, uint k) returns (uint):" +
-            "compute (x + y) % k where the addition is performed with arbitrary precision and does not wrap around at 2**256",
-            insertText: "addmod(${1:x},${2:y},${3:k})",
-            kind: CompletionItemKind.Method,
-            label: "addmod",
-        },
-        {
-            detail: "mulmod(uint x, uint y, uint k) returns (uint):" +
-            "compute (x * y) % k where the multiplication is performed with arbitrary precision and does not wrap around at 2**256",
-            insertText: "mulmod(${1:x},${2:y},${3:k})",
-            kind: CompletionItemKind.Method,
-            label: "mulmod",
-        },
-        {
-            detail: "keccak256(...) returns (bytes32):" +
-            "compute the Ethereum-SHA-3 (Keccak-256) hash of the (tightly packed) arguments",
-            insertText: "keccak256(${1:x})",
-            kind: CompletionItemKind.Method,
-            label: "keccak256",
-        },
-        {
-            detail: "sha256(...) returns (bytes32):" +
-            "compute the SHA-256 hash of the (tightly packed) arguments",
-            insertText: "sha256(${1:x})",
-            kind: CompletionItemKind.Method,
-            label: "sha256",
-        },
-        {
-            detail: "sha3(...) returns (bytes32):" +
-            "alias to keccak256",
-            insertText: "sha3(${1:x})",
-            kind: CompletionItemKind.Method,
-            label: "sha3",
-        },
-        {
-            detail: "ripemd160(...) returns (bytes20):" +
-            "compute RIPEMD-160 hash of the (tightly packed) arguments",
-            insertText: "ripemd160(${1:x})",
-            kind: CompletionItemKind.Method,
-            label: "ripemd160",
-        },
-        {
-            detail: "ecrecover(bytes32 hash, uint8 v, bytes32 r, bytes32 s) returns (address):" +
-            "recover the address associated with the public key from elliptic curve signature or return zero on error",
-            insertText: "ecrecover(${1:hash},${2:v},${3:r},${4:s})",
-            kind: CompletionItemKind.Method,
-            label: "ecrecover",
-        },
-    ];
+function getGlobalFunctionCompletions(finfo: FileInfo): CompletionItem[] {
+  finfo;
+  return [
+    {
+      detail: "assert(bool condition): throws if the condition is not met - to be used for internal errors.",
+      insertText: "assert(${1:condition});",
+      kind: CompletionItemKind.Function,
+      label: "assert",
+    },
+    {
+      detail: "require(bool condition): throws if the condition is not met - to be used for errors in inputs or external components.",
+      insertText: "require(${1:condition});",
+      kind: CompletionItemKind.Method,
+      label: "require",
+    },
+    {
+      detail: "revert(): abort execution and revert state changes",
+      insertText: "revert();",
+      kind: CompletionItemKind.Method,
+      label: "revert",
+    },
+    {
+      detail: "addmod(uint x, uint y, uint k) returns (uint):" +
+        "compute (x + y) % k where the addition is performed with arbitrary precision and does not wrap around at 2**256",
+      insertText: "addmod(${1:x},${2:y},${3:k})",
+      kind: CompletionItemKind.Method,
+      label: "addmod",
+    },
+    {
+      detail: "mulmod(uint x, uint y, uint k) returns (uint):" +
+        "compute (x * y) % k where the multiplication is performed with arbitrary precision and does not wrap around at 2**256",
+      insertText: "mulmod(${1:x},${2:y},${3:k})",
+      kind: CompletionItemKind.Method,
+      label: "mulmod",
+    },
+    {
+      detail: "keccak256(...) returns (bytes32):" +
+        "compute the Ethereum-SHA-3 (Keccak-256) hash of the (tightly packed) arguments",
+      insertText: "keccak256(${1:x})",
+      kind: CompletionItemKind.Method,
+      label: "keccak256",
+    },
+    {
+      detail: "sha256(...) returns (bytes32):" +
+        "compute the SHA-256 hash of the (tightly packed) arguments",
+      insertText: "sha256(${1:x})",
+      kind: CompletionItemKind.Method,
+      label: "sha256",
+    },
+    {
+      detail: "sha3(...) returns (bytes32):" +
+        "alias to keccak256",
+      insertText: "sha3(${1:x})",
+      kind: CompletionItemKind.Method,
+      label: "sha3",
+    },
+    {
+      detail: "ripemd160(...) returns (bytes20):" +
+        "compute RIPEMD-160 hash of the (tightly packed) arguments",
+      insertText: "ripemd160(${1:x})",
+      kind: CompletionItemKind.Method,
+      label: "ripemd160",
+    },
+    {
+      detail: "ecrecover(bytes32 hash, uint8 v, bytes32 r, bytes32 s) returns (address):" +
+        "recover the address associated with the public key from elliptic curve signature or return zero on error",
+      insertText: "ecrecover(${1:hash},${2:v},${3:r},${4:s})",
+      kind: CompletionItemKind.Method,
+      label: "ecrecover",
+    },
+  ];
 }
 
-function getGlobalVariableCompletions(): CompletionItem[] {
-    return [
-        {
-            detail: "Current block",
-            kind: CompletionItemKind.Variable,
-            label: "block",
-        },
-        {
-            detail: "Current message",
-            kind: CompletionItemKind.Variable,
-            label: "msg",
-        },
-        {
-            detail: "(uint): current block timestamp (alias for block.timestamp)",
-            kind: CompletionItemKind.Variable,
-            label: "now",
-        },
-        {
-            detail: "Current transaction",
-            kind: CompletionItemKind.Variable,
-            label: "tx",
-        },
-    ];
+function getGlobalVariableCompletions(finfo: FileInfo): CompletionItem[] {
+  finfo;
+  return [
+    {
+      detail: "Current block",
+      kind: CompletionItemKind.Variable,
+      label: "block",
+    },
+    {
+      detail: "Current message",
+      kind: CompletionItemKind.Variable,
+      label: "msg",
+    },
+    {
+      detail: "(uint): current block timestamp (alias for block.timestamp)",
+      kind: CompletionItemKind.Variable,
+      label: "now",
+    },
+    {
+      detail: "Current transaction",
+      kind: CompletionItemKind.Variable,
+      label: "tx",
+    },
+  ];
 }
 
-function getTypeCompletions(): CompletionItem[] {
-    const types = ["address", "string", "bytes", "byte", "int", "uint", "bool", "hash"];
-    return types.map(type => {
-        const item = new CompletionItem(type, CompletionItemKind.Keyword);
-        item.detail = type + " type";
-        return item;
-    });
+function getTypeCompletions(finfo: FileInfo): CompletionItem[] {
+  finfo;
+  const types = ["address", "string", "bytes", "byte", "int", "uint", "bool", "hash"];
+  return types.map(type => {
+    const item = new CompletionItem(type, CompletionItemKind.Keyword);
+    item.detail = type + " type";
+    return item;
+  });
 }
 
 function getUnitCompletions(): CompletionItem[] {
@@ -135,95 +140,86 @@ function getUnitCompletions(): CompletionItem[] {
     return etherUnitCompletions.concat(timeUnitCompletions);
 }
 
-export function getAllCompletions(text: string): CompletionItem[] {
-    let result;
-    try {
-        result = solparse.parse(text);
-    } catch (err) {
-        return [];
+export function getAllCompletions(finfo: FileInfo, text: string): CompletionItem[] {
+  let result;
+  try {
+    result = solparse.parse(text);
+  } catch (err) {
+    return [];
+  }
+  const completionItems: CompletionItem[] = [];
+  for (const element of result.body) {
+    if (element.type !== "ContractStatement" && element.type !== "LibraryStatement") {
+      continue;
     }
-    const completionItems: CompletionItem[] = [];
-    for (const element of result.body) {
-        if (element.type !== "ContractStatement" && element.type !== "LibraryStatement") {
-            continue;
-        }
-        if (typeof element.body === "undefined" || element.body === null) {
-            continue;
-        }
-        const contractName = element.name;
-        for (const contractElement of element.body) {
-            switch (contractElement.type) {
-                case "FunctionDeclaration":
-                    if (contractElement.name !== contractName) {
-                        completionItems.push(createFunctionEventCompletionItem(contractElement, "function", contractName));
-                    }
-                    break;
-                case "EventDeclaration":
-                    completionItems.push(createFunctionEventCompletionItem(contractElement, "event", contractName));
-                    break;
-                case "StateVariableDeclaration":
-                    const typeStr = typeStringFromLiteral(contractElement.literal);
-                    const completionItem = new CompletionItem(contractElement.name, CompletionItemKind.Field);
-                    completionItem.detail = "(state variable in " + contractName + ") " + typeStr + " " + contractElement.name;
-                    completionItems.push(completionItem);
-                    break;
-            }
-        }
+    if (typeof element.body === "undefined" || element.body === null) {
+      continue;
     }
+    const contractName = element.name;
+    for (const contractElement of element.body) {
+      switch (contractElement.type) {
+        case "FunctionDeclaration":
+          if (contractElement.name !== contractName) {
+            completionItems.push(createFunctionEventCompletionItem(contractElement, "function", contractName));
+          }
+          break;
+        case "EventDeclaration":
+          completionItems.push(createFunctionEventCompletionItem(contractElement, "event", contractName));
+          break;
+        case "StateVariableDeclaration":
+          const typeStr = typeStringFromLiteral(contractElement.literal);
+          const completionItem = new CompletionItem(contractElement.name, CompletionItemKind.Field);
+          completionItem.detail = "(state variable in " + contractName + ") " + typeStr + " " + contractElement.name;
+          completionItems.push(completionItem);
+          break;
+      }
+    }
+  }
 
-    const completions = [
-        ...completionItems,
-        ...getGlobalFunctionCompletions(),
-        ...getGlobalVariableCompletions(),
-        ...getTypeCompletions(),
-        ...getUnitCompletions()
-    ];
+  const completions = [
+    ...completionItems,
+    ...getGlobalFunctionCompletions(finfo),
+    ...getGlobalVariableCompletions(finfo),
+    ...getTypeCompletions(finfo),
+    ...getUnitCompletions()
+  ];
 
-    return completions;
+  return completions;
 }
 
-export function isCompletionTriggeredByDot(line: string, character: number): { triggeredByDot: boolean, wordEndCharacter: number } {
-    let start = 0;
-    let triggeredByDot = false;
-    for (let i = character; i >= 0; i--) {
-        if (line[i] === " ") {
-            triggeredByDot = false;
-            i = 0;
-            start = 0;
-            break;
-        }
-        if (line[i] === ".") {
-            start = i;
-            i = 0;
-            triggeredByDot = true;
-            break;
-        }
-    }
-    return {
-        triggeredByDot,
-        wordEndCharacter: start
-    };
-}
-
-export function getContextualCompletions(lineText: string, wordEndCharacter: number): CompletionItem[] {
-    if (isCompletionTrigeredByVariableName("block", lineText, wordEndCharacter)) {
-        return getBlockCompletions();
-    } else if (isCompletionTrigeredByVariableName("msg", lineText, wordEndCharacter)) {
-        return getMsgCompletions();
-    } else if (isCompletionTrigeredByVariableName("tx", lineText, wordEndCharacter)) {
-        return getTxCompletions();
-    } else {
-        return [];
-    }
-}
-
-function isCompletionTrigeredByVariableName(variableName: string, lineText: string, wordEndCharacter: number): boolean {
-    const length = variableName.length;
-    if (wordEndCharacter >= length
-        && lineText.substr(wordEndCharacter - length, length) === variableName) {
-        return true;
-    }
-    return false;
+const endWordRegex = /[A-Za-z_][A-Za-z0-9_]*$/;
+/**
+ * Find completions that can follow a ".". We use the word before as context for member names.
+ *
+ * @param lineText text of the line containing "."
+ * @param dotOffset position of the dot to be matched
+ * @returns the array of completion items that can follow <word>"."
+ */
+export function getCompletionsAfterDot(finfo: FileInfo, lineText: string, dotOffset: number): CompletionItem[] {
+  const beforeDot = lineText.substr(0, dotOffset);
+  const matches = beforeDot.match(endWordRegex);
+  if (!matches) return [];;
+  const word = matches[0];
+  if (word === "block") {
+    return getBlockCompletions();
+  } else if (word === "msg") {
+    return getMsgCompletions();
+  } else if (word === "tx") {
+    return getTxCompletions();
+  } else if (word in finfo.staticInfo.enums) {
+    return finfo.staticInfo.enums[word].map(e => {
+      return {
+        detail: `Enumeration literal of ${word}`,
+        kind: CompletionItemKind.Enum,
+        label: e
+      }
+    });
+  } else if (word in finfo.staticInfo.array) {
+    // FIXME: fill in
+    return [];
+  } else {
+    return [];
+  }
 }
 
 function createFunctionEventCompletionItem(contractElement: any, type: string, contractName: string): CompletionItem {
@@ -389,32 +385,29 @@ function getMsgCompletions(): CompletionItem[] {
     ];
 }
 
-const getCompletionItems = function(document: TextDocument, position: Position, token: CancellationToken,
-					   context: CompletionContext): CompletionItem[] {
-  token; context;
+export function solcCompletionItemsProvider (lspMgr: LspManager, document: TextDocument,
+                                             position: Position, cancelToken: CancellationToken,
+                                             context: CompletionContext): CompletionItem[] {
+  context;
+  if (cancelToken.isCancellationRequested) return [];
   const text = document.getText();
   const lineTexts = text.split(/\r?\n/g);
   const lineText = lineTexts[position.line];
-  return getAllCompletions(lineText);
+  const finfo = lspMgr.fileInfo[document.uri.path];
+  return getAllCompletions(finfo, lineText);
 }
 
-const getCompletionItemsAfterDot = function(document: TextDocument, position: Position, token: CancellationToken,
-					    context: CompletionContext): CompletionItem[] {
-  token; context;
+export function solcCompletionItemsAfterDotProvider(lspMgr: LspManager, document: TextDocument,
+                                                    position: Position, cancelToken: CancellationToken,
+                                                    context: CompletionContext): CompletionItem[] {
+  /* Something seems to be wrong in that we are not getting called back
+     only on the trigger character, but always. So test context for TriggerCharacter
+  */
+  if (context.triggerKind !== CompletionTriggerKind.TriggerCharacter || context.triggerCharacter !== '.')
+    return [];
+  if (cancelToken.isCancellationRequested) return [];
   const text = document.getText();
-  const lineTexts = text.split(/\r?\n/g);
-  const lineText = lineTexts[position.line];
-  const { triggeredByDot, wordEndCharacter } = isCompletionTriggeredByDot(lineText, position.character);
-  triggeredByDot; // Should be true.
-  return getContextualCompletions(lineText, wordEndCharacter);
-}
-
-export const solcCompletionItemsProvider = {
-  provideCompletionItems: getCompletionItems
-  // No resolveCompletionItem for now
-}
-
-export const solcCompletionItemsProviderDot = {
-  provideCompletionItems: getCompletionItemsAfterDot
-  // No resolveCompletionItem for now
+  const lineText = text.split(/\r?\n/g)[position.line];
+  const finfo = lspMgr.fileInfo[document.uri.path];
+  return getCompletionsAfterDot(finfo, lineText, position.character-1);
 }
