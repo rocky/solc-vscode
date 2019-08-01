@@ -17,7 +17,8 @@ import { registerSolidityHover } from "./features/hover";
 import { registerDefinition } from "./features/definitions";
 import {
   solcCompletionItemsProvider,
-  solcCompletionItemsAfterDotProvider
+  solcCompletionItemsAfterDotProvider,
+  solcCompletionItemsAfterMapProvider
 } from "./features/completions";
 import { registerTypeDefinition } from "./features/type-definition";
 import { registerReferences } from "./features/references";
@@ -61,7 +62,7 @@ export function activate(context: ExtensionContext) {
   });
 
   /****** IntelliSense command completion ***************************/
-  const provider1 = vscode.languages.registerCompletionItemProvider(
+  vscode.languages.registerCompletionItemProvider(
     { scheme: "file", language: "solidity" },
     { provideCompletionItems:
       function(document: TextDocument,
@@ -75,13 +76,13 @@ export function activate(context: ExtensionContext) {
     }
   );
 
-  const provider2 = vscode.languages.registerCompletionItemProvider(
+  vscode.languages.registerCompletionItemProvider(
     { scheme: "file", language: "solidity" },
     { provideCompletionItems:
       function(document: TextDocument,
                position: Position, cancelToken: CancellationToken,
 			         context: CompletionContext): CompletionItem[] {
-        return solcCompletionItemsAfterDotProvider(lspMgr, document,  position, cancelToken,
+        return solcCompletionItemsAfterDotProvider(lspMgr, document, position, cancelToken,
                                                    context);
       }
       // No resolveCompletionItem for now
@@ -89,8 +90,22 @@ export function activate(context: ExtensionContext) {
     "." // triggered whenever a '.' is being typed
   );
 
-  context.subscriptions.push(provider1, provider2);
-  provider1; provider2;
+  vscode.languages.registerCompletionItemProvider(
+    { scheme: "file", language: "solidity" },
+    { provideCompletionItems:
+      function(document: TextDocument,
+               position: Position, cancelToken: CancellationToken,
+			         context: CompletionContext): CompletionItem[] {
+        return solcCompletionItemsAfterMapProvider(lspMgr, document, position, cancelToken,
+                                                   context);
+      }
+      // No resolveCompletionItem for now
+    },
+    ">" // => is not triggering, so use '>' and check on the other side.
+  );
+
+  // context.subscriptions.push(provider1, provider2);
+  // provider1; provider2;
 
   /****** End IntelliSense command completion ***********************/
 

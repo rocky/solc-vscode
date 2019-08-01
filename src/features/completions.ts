@@ -86,9 +86,7 @@ function getGlobalFunctionCompletions(finfo: FileInfo): CompletionItem[] {
   ];
 }
 
-function getGlobalVariableCompletions(finfo: FileInfo): CompletionItem[] {
-  finfo;
-  return [
+const globalBuiltinVariableCompletions = [
     {
       detail: "Current block",
       kind: CompletionItemKind.Variable,
@@ -110,35 +108,76 @@ function getGlobalVariableCompletions(finfo: FileInfo): CompletionItem[] {
       label: "tx",
     },
   ];
+
+function getGlobalVariableCompletions(finfo: FileInfo): CompletionItem[] {
+  finfo; // FIXME: pick out global varaibles from this.
+  return globalBuiltinVariableCompletions;
 }
+
+const builtinTypes = ["address", "string", "byte",
+                      "bytes",  "bytes1", "bytes2", "bytes4", "bytes32", // skip bytes5..32, etc.
+                      "int", "int8", "int16", "int32", "int64", "int128", "int256",  // skip other ints
+                      "uint", "uint8", "uint16", "uint32", "uint64", "uint128", "uint256", // skip other units
+                      "bool", "hash"
+                     ]
+
+const builtinTypeCompletions = builtinTypes.map(typeName => {
+    return {
+      detail:`built-in type`,
+      kind: CompletionItemKind.Keyword,
+      label: typeName
+    }
+  });
 
 function getTypeCompletions(finfo: FileInfo): CompletionItem[] {
-  finfo;
-  const types = ["address", "string", "bytes", "byte", "int", "uint", "bool", "hash"];
-  return types.map(type => {
-    const item = new CompletionItem(type, CompletionItemKind.Keyword);
-    item.detail = type + " type";
-    return item;
+  const staticInfo = finfo.staticInfo;
+  const enumsDefined = Object.keys(staticInfo.enums).map(typeName => {
+    return {
+      detail: `User-defined enum type`,
+      kind: CompletionItemKind.TypeParameter,
+      label: typeName,
+    }
   });
+  const structsDefined = Object.keys(staticInfo.structs).map(typeName => {
+    return {
+      detail: `User-defined struct type`,
+      label: typeName,
+      kind: CompletionItemKind.TypeParameter
+    };
+  });
+
+  return builtinTypeCompletions.concat(enumsDefined).concat(structsDefined);
 }
 
-function getUnitCompletions(): CompletionItem[] {
-    const etherUnits = ["wei", "finney", "szabo", "ether"];
-    const etherUnitCompletions = etherUnits.map(etherUnit => {
-        const item = new CompletionItem(etherUnit, CompletionItemKind.Unit);
-        item.detail = etherUnit + ": ether unit";
-        return item;
-    });
-
-    const timeUnits = ["seconds", "minutes", "hours", "days", "weeks", "years"];
-    const timeUnitCompletions = timeUnits.map(timeUnit => {
-        const item = new CompletionItem(timeUnit, CompletionItemKind.Unit);
-        item.detail = timeUnit + ": time unit";
-        return item;
-    });
-
-    return etherUnitCompletions.concat(timeUnitCompletions);
+/* What can go after map operator "=>".
+   These are the same as type compiletions, but we want to add a space
+   after "=>".
+*/
+function getMapCompletions(finfo: FileInfo): CompletionItem[] {
+  const items = getTypeCompletions(finfo);
+  for (const c of items) { c.label = " " + c.label }
+  return items;
 }
+
+const timeUnits = ["seconds", "minutes", "hours", "days", "weeks", "years"];
+const etherUnits = ["wei", "finney", "szabo", "ether"];
+const etherUnitCompletions = etherUnits.map(etherUnit => {
+  return {
+    detail: `built-in ether unit`,
+    label: etherUnit,
+    kind: CompletionItemKind.Unit
+  };
+});
+
+const timeUnitCompletions = timeUnits.map(timeUnit => {
+  return {
+    detail: `built-in time unit`,
+    label: timeUnit,
+    kind: CompletionItemKind.Unit
+  }
+});
+
+const unitCompletions = etherUnitCompletions.concat(timeUnitCompletions);
 
 export function getAllCompletions(finfo: FileInfo, text: string): CompletionItem[] {
   let result;
@@ -181,7 +220,7 @@ export function getAllCompletions(finfo: FileInfo, text: string): CompletionItem
     ...getGlobalFunctionCompletions(finfo),
     ...getGlobalVariableCompletions(finfo),
     ...getTypeCompletions(finfo),
-    ...getUnitCompletions()
+    ...unitCompletions
   ];
 
   return completions;
@@ -189,7 +228,7 @@ export function getAllCompletions(finfo: FileInfo, text: string): CompletionItem
 
 const arrayMembers = ["length", "pop()", "push("].map(e => {
       return {
-        detail: `Array member`,
+        detail: `${e}: array member`,
         kind: CompletionItemKind.Method,
         label: e
       }
@@ -197,7 +236,7 @@ const arrayMembers = ["length", "pop()", "push("].map(e => {
 
 const bytesMembers = ["pop()"].map(e => {
       return {
-        detail: `bytes variable`,
+        detail: `${e}: bytes variable`,
         kind: CompletionItemKind.Method,
         label: e
       }
@@ -224,10 +263,18 @@ export function getCompletionsAfterDot(finfo: FileInfo, lineText: string, dotOff
   } else if (word === "tx") {
     return getTxCompletions();
   } else if (word in finfo.staticInfo.enums) {
-    return finfo.staticInfo.enums[word].map(e => {
+    return finfo.staticInfo.enums[word].map((e: string) => {
       return {
         detail: `Enumeration literal of ${word}`,
         kind: CompletionItemKind.Enum,
+        label: e
+      }
+    });
+  } else if (word in finfo.staticInfo.structs) {
+    return finfo.staticInfo.structs[word].map((e: string) => {
+      return {
+        detail: `Struct member of ${word}`,
+        kind: CompletionItemKind.Field,
         label: e
       }
     });
@@ -403,15 +450,20 @@ function getMsgCompletions(): CompletionItem[] {
     ];
 }
 
+function getLineTextAndFinfo(lspMgr: LspManager, document: TextDocument, position: Position): [FileInfo, string] {
+  const text = document.getText();
+  const lineTexts = text.split(/\r?\n/g);
+  const lineText = lineTexts[position.line];
+  const finfo = lspMgr.fileInfo[document.uri.path];
+  return [finfo, lineText];
+}
+
 export function solcCompletionItemsProvider (lspMgr: LspManager, document: TextDocument,
                                              position: Position, cancelToken: CancellationToken,
                                              context: CompletionContext): CompletionItem[] {
   context;
   if (cancelToken.isCancellationRequested) return [];
-  const text = document.getText();
-  const lineTexts = text.split(/\r?\n/g);
-  const lineText = lineTexts[position.line];
-  const finfo = lspMgr.fileInfo[document.uri.path];
+  const [finfo, lineText] = getLineTextAndFinfo(lspMgr, document, position);
   return getAllCompletions(finfo, lineText);
 }
 
@@ -424,8 +476,20 @@ export function solcCompletionItemsAfterDotProvider(lspMgr: LspManager, document
   if (context.triggerKind !== CompletionTriggerKind.TriggerCharacter || context.triggerCharacter !== '.')
     return [];
   if (cancelToken.isCancellationRequested) return [];
-  const text = document.getText();
-  const lineText = text.split(/\r?\n/g)[position.line];
-  const finfo = lspMgr.fileInfo[document.uri.path];
+  const [finfo, lineText] = getLineTextAndFinfo(lspMgr, document, position);
   return getCompletionsAfterDot(finfo, lineText, position.character-1);
+}
+
+export function solcCompletionItemsAfterMapProvider(lspMgr: LspManager, document: TextDocument,
+                                                    position: Position, cancelToken: CancellationToken,
+                                                    context: CompletionContext): CompletionItem[] {
+  /* Something seems to be wrong in that we are not getting called back
+     only on the trigger character, but always. So test context for TriggerCharacter
+  */
+  if (context.triggerKind !== CompletionTriggerKind.TriggerCharacter)
+    return [];
+  if (cancelToken.isCancellationRequested) return [];
+  const [finfo, lineText] = getLineTextAndFinfo(lspMgr, document, position);
+  if (lineText.substr(position.character-2, 2) != '=>') return [];
+  return getMapCompletions(finfo);
 }
