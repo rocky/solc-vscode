@@ -24,8 +24,9 @@ function createFunctionParamsSnippet(params: Array<{paramName: string, paramType
   for (let i=0; i < params.length;) {
     const p = params[i++];
     paramArray.push(`\$\{${i}:${p.paramName}\}`);
-    docArray.push(`**${p.paramName}**: *{p.paramType}*`);
+    docArray.push(`**${p.paramName}**: *${p.paramType}*`);
   }
+  // TODO: add returns
   return {
     paramStr: paramArray.join(", "),
     docStr: new MarkdownString(docArray.join(", "))
@@ -33,20 +34,45 @@ function createFunctionParamsSnippet(params: Array<{paramName: string, paramType
 }
 
 function getFunctionCompletions(staticInfo: StaticInfo): CompletionItem[] {
-  const result: Array<CompletionItem> = [];
-  for (const contractFnName in staticInfo.fns) {
-	  const [contractName, fnName] = contractFnName.split(".");
-    const params = staticInfo.fns[contractFnName].params;
-    const paramObj = createFunctionParamsSnippet(params);
-    result.push({
-      detail: `${contractName} function`,
-      documentation: paramObj.docStr,
-      kind: CompletionItemKind.Function,
-      insertText: new SnippetString(`${fnName}(${paramObj.paramStr})`),
-      label: contractFnName
-    });
-  };
-  return result;
+  try {
+    const result: Array<CompletionItem> = [];
+    for (const contractFnName in staticInfo.fns) {
+	    const [contractName, fnName] = contractFnName.split(".");
+      const params = staticInfo.fns[contractFnName].params;
+      const paramObj = createFunctionParamsSnippet(params);
+      result.push({
+        detail: `${contractName} function`,
+        documentation: paramObj.docStr,
+        kind: CompletionItemKind.Function,
+        insertText: new SnippetString(`${fnName}(${paramObj.paramStr})`),
+        label: contractFnName
+      });
+    };
+    return result;
+  } catch {
+    return [];
+  }
+}
+
+function getEventCompletions(staticInfo: StaticInfo): CompletionItem[] {
+  try {
+    const result: Array<CompletionItem> = [];
+    for (const contractEventName in staticInfo.events) {
+	    const [contractName, eventName] = contractEventName.split(".");
+      const params = staticInfo.events[contractEventName].params;
+      const paramObj = createFunctionParamsSnippet(params);
+      result.push({
+        detail: `${contractName} event`,
+        documentation: paramObj.docStr,
+        kind: CompletionItemKind.Function,
+        insertText: new SnippetString(`${eventName}(${paramObj.paramStr})`),
+        label: contractEventName
+      });
+    };
+    return result;
+  } catch {
+    return [];
+  }
 }
 
 function getGlobalFunctionCompletions(): CompletionItem[] {
@@ -228,6 +254,7 @@ const unitCompletions = etherUnitCompletions.concat(timeUnitCompletions);
 
 export function getAllSolcCompletions(finfo: FileInfo): CompletionItem[] {
   const completions = [
+    ...getEventCompletions(finfo.staticInfo),
     ...getFunctionCompletions(finfo.staticInfo),
     ...getGlobalFunctionCompletions(),
     ...getGlobalVariableCompletions(),
@@ -265,10 +292,13 @@ const endWordRegex = /[A-Za-z_][A-Za-z0-9_]*$/;
  * @returns the array of completion items that can follow <word>"."
  */
 export function getCompletionsAfterDot(finfo: FileInfo, lineText: string, dotOffset: number): CompletionItem[] {
+
+  // TODO: I believe there is a vscode way to do this.
   const beforeDot = lineText.substr(0, dotOffset);
   const matches = beforeDot.match(endWordRegex);
   if (!matches) return [];;
   const word = matches[0];
+
   if (word === "block") {
     return getBlockCompletions();
   } else if (word === "msg") {
@@ -323,49 +353,6 @@ export function getCompletionsAfterDot(finfo: FileInfo, lineText: string, dotOff
 //   }
 
 //   return literalType + suffixType;
-// }
-
-// Function createParamsInfo(params: Signature): string {
-//   let paramsInfo = '';
-//   if (typeof params !== 'undefined' && params !== null) {
-//     if (params.hasOwnProperty('params')) {
-//       params = params.params;
-//     }
-//     params.forEach( parameterElement => {
-//       const typeString = getTypeString(parameterElement.literal);
-//       let currentParamInfo = '';
-//       if (typeof parameterElement.id !== 'undefined' && parameterElement.id !== null ) { // no name on return parameters
-//         currentParamInfo = typeString + ' ' + parameterElement.id;
-//       } else {
-//         currentParamInfo = typeString;
-//       }
-//       if (paramsInfo === '') {
-//         paramsInfo = currentParamInfo;
-//       } else {
-//         paramsInfo = paramsInfo + ', ' + currentParamInfo;
-//       }
-//     });
-//   }
-//   return paramsInfo;
-// }
-
-
-// function createFunctionEventCompletionItem(contractElement: any, type: string, contractName: string): CompletionItem {
-
-//   const completionItem =  CompletionItem.create(contractElement.name);
-//   completionItem.kind = CompletionItemKind.Function;
-//   const paramsInfo = createParamsInfo(contractElement.params);
-//   const paramsSnippet = createFunctionParamsSnippet(contractElement.params);
-//   let returnParamsInfo = createParamsInfo(contractElement.returnParams);
-//   if (returnParamsInfo !== '') {
-//     returnParamsInfo = ' returns (' + returnParamsInfo + ')';
-//   }
-//   completionItem.insertTextFormat = 2;
-//   completionItem.insertText = contractElement.name + '(' + paramsSnippet + ');';
-//   const info = '(' + type + ' in ' + contractName + ') ' + contractElement.name + '(' + paramsInfo + ')' + returnParamsInfo;
-//   completionItem.documentation = info;
-//   completionItem.detail = info;
-//   return completionItem;
 // }
 
 function getBlockCompletions(): CompletionItem[] {
