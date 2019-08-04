@@ -8,13 +8,22 @@ import {
   TextDocument,
 } from "vscode";
 
-import { FileInfo, LspManager } from "solc-lsp";
+import { FileInfo, LspManager, StaticInfo } from "solc-lsp";
 // import { LanguageServiceHost } from "./types";
 
-const solparse = require("solparse");
+function getFunctionCompletions(staticInfo: StaticInfo): CompletionItem[] {
+    return (<Array<string>>Array.from(staticInfo.nodeType.FunctionDefinition.values()))
+    .map((fnName: string) => {
+      return {
+        detail: "function",
+        kind: CompletionItemKind.Function,
+        insertText: `${fnName}(\${1:params});`,
+        label: fnName
+      }
+    })
+}
 
-function getGlobalFunctionCompletions(finfo: FileInfo): CompletionItem[] {
-  finfo;
+function getGlobalFunctionCompletions(): CompletionItem[] {
   return [
     {
       detail: "assert(bool condition): throws if the condition is not met - to be used for internal errors.",
@@ -109,9 +118,19 @@ const globalBuiltinVariableCompletions = [
     },
   ];
 
-function getGlobalVariableCompletions(finfo: FileInfo): CompletionItem[] {
-  finfo; // FIXME: pick out global varaibles from this.
+function getGlobalVariableCompletions(): CompletionItem[] {
   return globalBuiltinVariableCompletions;
+}
+
+function getVariableDeclarationCompletions(staticInfo: StaticInfo): CompletionItem[] {
+  return (<Array<string>>Array.from(staticInfo.nodeType.VariableDeclaration.values()))
+    .map((varName: string) => {
+      return {
+        detail: "variable",
+        kind: CompletionItemKind.Variable,
+        label: varName
+      }
+    })
 }
 
 const builtinTypes = ["address", "string", "byte",
@@ -123,7 +142,7 @@ const builtinTypes = ["address", "string", "byte",
 
 const builtinTypeCompletions = builtinTypes.map(typeName => {
     return {
-      detail:`built-in type`,
+      detail: "built-in type",
       kind: CompletionItemKind.Keyword,
       label: typeName
     }
@@ -159,7 +178,6 @@ function getMapCompletions(finfo: FileInfo): CompletionItem[] {
   return items;
 }
 
-const timeUnits = ["seconds", "minutes", "hours", "days", "weeks", "years"];
 const etherUnits = ["wei", "finney", "szabo", "ether"];
 const etherUnitCompletions = etherUnits.map(etherUnit => {
   return {
@@ -169,6 +187,7 @@ const etherUnitCompletions = etherUnits.map(etherUnit => {
   };
 });
 
+const timeUnits = ["seconds", "minutes", "hours", "days", "weeks", "years"];
 const timeUnitCompletions = timeUnits.map(timeUnit => {
   return {
     detail: `built-in time unit`,
@@ -179,46 +198,44 @@ const timeUnitCompletions = timeUnits.map(timeUnit => {
 
 const unitCompletions = etherUnitCompletions.concat(timeUnitCompletions);
 
-export function getAllCompletions(finfo: FileInfo, text: string): CompletionItem[] {
-  let result;
-  try {
-    result = solparse.parse(text);
-  } catch (err) {
-    return [];
-  }
-  const completionItems: CompletionItem[] = [];
-  for (const element of result.body) {
-    if (element.type !== "ContractStatement" && element.type !== "LibraryStatement") {
-      continue;
-    }
-    if (typeof element.body === "undefined" || element.body === null) {
-      continue;
-    }
-    const contractName = element.name;
-    for (const contractElement of element.body) {
-      switch (contractElement.type) {
-        case "FunctionDeclaration":
-          if (contractElement.name !== contractName) {
-            completionItems.push(createFunctionEventCompletionItem(contractElement, "function", contractName));
-          }
-          break;
-        case "EventDeclaration":
-          completionItems.push(createFunctionEventCompletionItem(contractElement, "event", contractName));
-          break;
-        case "StateVariableDeclaration":
-          const typeStr = typeStringFromLiteral(contractElement.literal);
-          const completionItem = new CompletionItem(contractElement.name, CompletionItemKind.Field);
-          completionItem.detail = "(state variable in " + contractName + ") " + typeStr + " " + contractElement.name;
-          completionItems.push(completionItem);
-          break;
-      }
-    }
-  }
+export function getAllSolcCompletions(finfo: FileInfo): CompletionItem[] {
+    //           completionItems.push(createFunctionEventCompletionItem(contractElement, "function", contractName));
+
+  // const completionItems: CompletionItem[] = [];
+  // for (const element of result.body) {
+  //   if (element.type !== "ContractStatement" && element.type !== "LibraryStatement") {
+  //     continue;
+  //   }
+  //   if (typeof element.body === "undefined" || element.body === null) {
+  //     continue;
+  //   }
+  //   const contractName = element.name;
+  //   for (const contractElement of element.body) {
+  //     switch (contractElement.type) {
+  //       case "FunctionDeclaration":
+  //         if (contractElement.name !== contractName) {
+  //           completionItems.push(createFunctionEventCompletionItem(contractElement, "function", contractName));
+  //         }
+  //         break;
+  //       case "EventDeclaration":
+  //         completionItems.push(createFunctionEventCompletionItem(contractElement, "event", contractName));
+  //         break;
+  //       case "StateVariableDeclaration":
+  //         const typeStr = typeStringFromLiteral(contractElement.literal);
+  //         const completionItem = new CompletionItem(contractElement.name, CompletionItemKind.Field);
+  //         completionItem.detail = "(state variable in " + contractName + ") " + typeStr + " " + contractElement.name;
+  //         completionItems.push(completionItem);
+  //         break;
+  //     }
+  //   }
+  // }
 
   const completions = [
-    ...completionItems,
-    ...getGlobalFunctionCompletions(finfo),
-    ...getGlobalVariableCompletions(finfo),
+    // ...completionItems,
+    ...getFunctionCompletions(finfo.staticInfo),
+    ...getGlobalFunctionCompletions(),
+    ...getGlobalVariableCompletions(),
+    ...getVariableDeclarationCompletions(finfo.staticInfo),
     ...getTypeCompletions(finfo),
     ...unitCompletions
   ];
@@ -287,87 +304,88 @@ export function getCompletionsAfterDot(finfo: FileInfo, lineText: string, dotOff
   }
 }
 
-function createFunctionEventCompletionItem(contractElement: any, type: string, contractName: string): CompletionItem {
-    const completionItem = new CompletionItem(contractElement.name, CompletionItemKind.Function);
-    const paramsInfo = createParamsInfo(contractElement.params);
-    const paramsSnippet = createFunctionParamsSnippet(contractElement.params);
-    let returnParamsInfo = createParamsInfo(contractElement.returnParams);
-    if (returnParamsInfo !== "") {
-        returnParamsInfo = " returns (" + returnParamsInfo + ")";
-    }
-    const info = "(" + type + " in " + contractName + ") " + contractElement.name + "(" + paramsInfo + ")" + returnParamsInfo;
+// FIXME: reinstate using solc.
+// function createFunctionEventCompletionItem(contractElement: any, typeName: string, contractName: string): CompletionItem {
+//   const paramsInfo = createParamsInfo(contractElement.params);
+//   const paramsSnippet = createFunctionParamsSnippet(contractElement.params);
+//   let returnParamsInfo = createParamsInfo(contractElement.returnParams);
+//   if (returnParamsInfo !== "") {
+//     returnParamsInfo = ` returns (${returnParamsInfo})`;
+//   }
+//   const completionItem = new CompletionItem(contractElement.name, CompletionItemKind.Function);
+//   completionItem.insertText = `${contractElement.name}(${paramsSnippet});`;
+//   const info = `(${typeName} in ${contractName}) ${contractElement.name}(${paramsInfo}) ${returnParamsInfo}`;
+//   completionItem.documentation = info;
+//   completionItem.detail = info;
+//   return completionItem;
+// }
 
-    completionItem.insertText = contractElement.name + "(" + paramsSnippet + ");";
-    completionItem.documentation = info;
-    completionItem.detail = info;
-    return completionItem;
-}
+// function typeStringFromLiteral(literal: any) {
+//     let isMapping = false;
+//     let suffixType = "";
 
-function typeStringFromLiteral(literal: any) {
-    let isMapping = false;
-    let suffixType = "";
+//     const literalType = literal.literal;
+//     if (typeof literalType.type !== "undefined") {
+//         isMapping = literalType.type === "MappingExpression";
+//         if (isMapping) {
+//             suffixType = "(" + typeStringFromLiteral(literalType.from) + " => " + typeStringFromLiteral(literalType.to) + ")";
+//         }
+//     }
 
-    const literalType = literal.literal;
-    if (typeof literalType.type !== "undefined") {
-        isMapping = literalType.type === "MappingExpression";
-        if (isMapping) {
-            suffixType = "(" + typeStringFromLiteral(literalType.from) + " => " + typeStringFromLiteral(literalType.to) + ")";
-        }
-    }
+//     const isArray = literal.array_parts.length > 0;
+//     if (isArray) {
+//         suffixType = suffixType + "[]";
+//     }
 
-    const isArray = literal.array_parts.length > 0;
-    if (isArray) {
-        suffixType = suffixType + "[]";
-    }
+//     if (isMapping) {
+//         return "mapping" + suffixType;
+//     }
 
-    if (isMapping) {
-        return "mapping" + suffixType;
-    }
+//     return literalType + suffixType;
+// }
 
-    return literalType + suffixType;
-}
+// FIXME: reinstate
+// function createParamsInfo(params: any): string {
+//     if (typeof params === "undefined" || params === null) {
+//         return "";
+//     }
 
-function createParamsInfo(params: any): string {
-    if (typeof params === "undefined" || params === null) {
-        return "";
-    }
+//     let paramsInfo = "";
+//     for (const paramElement of params) {
+//         const typStr = typeStringFromLiteral(paramElement.literal);
+//         let currentParamInfo = "";
+//         if (typeof paramElement.id === "undefined" || paramElement.id === null) {
+//             currentParamInfo = typStr;
+//         } else {
+//             currentParamInfo = typStr + " " + paramElement.id;
+//         }
+//         if (paramsInfo === "") {
+//             paramsInfo = currentParamInfo;
+//         } else {
+//             paramsInfo = paramsInfo + ", " + currentParamInfo;
+//         }
+//     }
+//     return paramsInfo;
+// }
 
-    let paramsInfo = "";
-    for (const paramElement of params) {
-        const typStr = typeStringFromLiteral(paramElement.literal);
-        let currentParamInfo = "";
-        if (typeof paramElement.id === "undefined" || paramElement.id === null) {
-            currentParamInfo = typStr;
-        } else {
-            currentParamInfo = typStr + " " + paramElement.id;
-        }
-        if (paramsInfo === "") {
-            paramsInfo = currentParamInfo;
-        } else {
-            paramsInfo = paramsInfo + ", " + currentParamInfo;
-        }
-    }
-    return paramsInfo;
-}
+// function createFunctionParamsSnippet(params: any): string {
+//   if (typeof params === "undefined" || params === null) {
+//     return "";
+//   }
 
-function createFunctionParamsSnippet(params: any): string {
-    if (typeof params === "undefined" || params === null) {
-        return "";
-    }
-
-    let paramsSnippet = "";
-    let counter = 0;
-    for (const paramElement of params) {
-        counter = counter + 1;
-        const currentParamSnippet = "${" + counter + ":" + paramElement.id + "}";
-        if (paramsSnippet === "") {
-            paramsSnippet = currentParamSnippet;
-        } else {
-            paramsSnippet = paramsSnippet + ", " + currentParamSnippet;
-        }
-    }
-    return paramsSnippet;
-}
+//   let paramsSnippet = "";
+//   let counter = 0;
+//   for (const paramElement of params) {
+//     counter = counter + 1;
+//     const currentParamSnippet = "${" + counter + ":" + paramElement.id + "}";
+//     if (paramsSnippet === "") {
+//       paramsSnippet = currentParamSnippet;
+//     } else {
+//       paramsSnippet = paramsSnippet + ", " + currentParamSnippet;
+//     }
+//   }
+//   return paramsSnippet;
+// }
 
 function getBlockCompletions(): CompletionItem[] {
     return [
@@ -464,7 +482,8 @@ export function solcCompletionItemsProvider (lspMgr: LspManager, document: TextD
   context;
   if (cancelToken.isCancellationRequested) return [];
   const [finfo, lineText] = getLineTextAndFinfo(lspMgr, document, position);
-  return getAllCompletions(finfo, lineText);
+  lineText;
+  return getAllSolcCompletions(finfo);
 }
 
 export function solcCompletionItemsAfterDotProvider(lspMgr: LspManager, document: TextDocument,

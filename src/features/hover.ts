@@ -20,7 +20,7 @@ export function registerSolidityHover(lspMgr: LspManager) {
           const info = lspMgr.fileInfo[filePath];
           const staticInfo = info.staticInfo;
 
-          // const editor = vscode.window.activeTextEditor;
+          // const editor = window.activeTextEditor;
           // let node: SolcAstNode | null;
           // if (editor) {
           //   const solcRange = solcRangeFromLineColRange(editor.selection, lspMgr.fileInfo[filePath].sourceMapping.lineBreaks);
@@ -31,6 +31,7 @@ export function registerSolidityHover(lspMgr: LspManager) {
           // }
           const solcOffset = info.sourceMapping.offsetFromLineColPosition(position);
           const node = staticInfo.offsetToAstNode(solcOffset);
+
           let mess: string;
           if (node) {
             if (cancelToken.isCancellationRequested) return undefined;
