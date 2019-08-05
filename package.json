@@ -143,8 +143,7 @@
         "start": "code --enable-proposed-api rocky.vscode-solc ."
     },
     "dependencies": {
-        "solc-lsp": "file:../solc-lsp",
-        "solparse": "^2.2.8"
+        "solc-lsp": "file:../solc-lsp"
     },
     "devDependencies": {
         "@types/node": "*",

@@ -1,3 +1,6 @@
+/**
+ * This handles Completion in for Solidity using solc and its AST as filtered through solc-lsp.
+ */
 import {
   CancellationToken,
   CompletionContext,
@@ -11,25 +14,33 @@ import {
 } from "vscode";
 
 import {
-  FileInfo, LspManager, StaticInfo
+  FileInfo, LspManager, Signature, StaticInfo
 } from "solc-lsp";
 // import { LanguageServiceHost } from "./types";
 
 
 /* turn function/event parameters into a vscode Snippet and corresponding Markdown */
-function createFunctionParamsSnippet(params: Array<{paramName: string, paramType: string}>):
-{paramStr: string, docStr: MarkdownString} {
+function createFunctionParamsSnippet(signature: Signature) {
   let paramArray: Array<string> = [];
+  let returnsDoc: Array<string> = [];
   let docArray: Array<string> = [];
-  for (let i=0; i < params.length;) {
-    const p = params[i++];
+  for (let i=0; i < signature.params.length;) {
+    const p = signature.params[i++];
     paramArray.push(`\$\{${i}:${p.paramName}\}`);
     docArray.push(`**${p.paramName}**: *${p.paramType}*`);
   }
-  // TODO: add returns
+  for (let i=0; i < signature.returns.length;) {
+    const p = signature.returns[i++];
+    returnsDoc.push(`**${p.paramName}**: *${p.paramType}*`);
+  }
+
+  let docStr = docArray.join(", ");
+  if (returnsDoc.length) {
+    docStr += `\n\n**returns** ${returnsDoc.join(", ")}`
+  }
   return {
     paramStr: paramArray.join(", "),
-    docStr: new MarkdownString(docArray.join(", "))
+    docStr: new MarkdownString(docStr)
   };
 }
 
@@ -38,10 +49,9 @@ function getFunctionCompletions(staticInfo: StaticInfo): CompletionItem[] {
     const result: Array<CompletionItem> = [];
     for (const contractFnName in staticInfo.fns) {
 	    const [contractName, fnName] = contractFnName.split(".");
-      const params = staticInfo.fns[contractFnName].params;
-      const paramObj = createFunctionParamsSnippet(params);
+      const paramObj = createFunctionParamsSnippet(staticInfo.fns[contractFnName]);
       result.push({
-        detail: `${contractName} function`,
+        detail: `function in contract ${contractName}`,
         documentation: paramObj.docStr,
         kind: CompletionItemKind.Function,
         insertText: new SnippetString(`${fnName}(${paramObj.paramStr})`),
@@ -59,8 +69,7 @@ function getEventCompletions(staticInfo: StaticInfo): CompletionItem[] {
     const result: Array<CompletionItem> = [];
     for (const contractEventName in staticInfo.events) {
 	    const [contractName, eventName] = contractEventName.split(".");
-      const params = staticInfo.events[contractEventName].params;
-      const paramObj = createFunctionParamsSnippet(params);
+      const paramObj = createFunctionParamsSnippet(staticInfo.events[contractEventName]);
       result.push({
         detail: `${contractName} event`,
         documentation: paramObj.docStr,
