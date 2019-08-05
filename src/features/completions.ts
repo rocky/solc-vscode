@@ -14,7 +14,9 @@ import {
 } from "vscode";
 
 import {
-  FileInfo, LspManager, Signature, StaticInfo
+  ContractFnVarToType,
+  FileInfo, LspManager,
+  Signature, StaticInfo
 } from "solc-lsp";
 // import { LanguageServiceHost } from "./types";
 
@@ -183,17 +185,40 @@ function getGlobalVariableCompletions(): CompletionItem[] {
   return globalBuiltinVariableCompletions;
 }
 
+/* turn function/event parameters into a vscode Snippet and corresponding Markdown */
+function createVariableSnippet(contractFnVarName: string, name: string, vars: ContractFnVarToType) {
+  const varType = vars[contractFnVarName];
+  return {
+    varType,
+    varDoc: new MarkdownString(`**${name}**: *${varType}*`)
+  }
+}
+
 function getVariableDeclarationCompletions(staticInfo: StaticInfo): CompletionItem[] {
-  if (!("VariableDeclaration" in staticInfo.nodeType))
-  return [];
-  return (<Array<string>>Array.from(staticInfo.nodeType.VariableDeclaration.values()))
-    .map((varName: string) => {
-      return {
-        detail: "variable",
-        kind: CompletionItemKind.Variable,
-        label: varName
+  try {
+    const result: Array<CompletionItem> = [];
+    for (const contractFnVarName in staticInfo.vars) {
+	    const [contractName, fnName, varName] = contractFnVarName.split(".");
+      let name = contractFnVarName;
+      let detail = `variable in contract ${contractName}`;
+      if (fnName === '') {
+        name = `${contractName}.${varName}`
+      } else {
+        detail += `, function ${fnName}`
       }
-    })
+      const varObj = createVariableSnippet(contractFnVarName, name, staticInfo.vars);
+      result.push({
+        detail,
+        documentation: varObj.varDoc,
+        kind: CompletionItemKind.Variable,
+        insertText: varName,
+        label: name
+      });
+    };
+    return result;
+  } catch {
+    return [];
+  }
 }
 
 const builtinTypes = ["address", "string", "byte",
