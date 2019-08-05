@@ -24,7 +24,7 @@ function createFunctionParamsSnippet(params: Array<{paramName: string, paramType
   for (let i=0; i < params.length;) {
     const p = params[i++];
     paramArray.push(`\$\{${i}:${p.paramName}\}`);
-    docArray.push(`**${p.paramName}**: *{p.paramType}*`);
+    docArray.push(`**${p.paramName}**: *${p.paramType}*`);
   }
   return {
     paramStr: paramArray.join(", "),
