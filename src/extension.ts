@@ -13,8 +13,9 @@ import {
 import * as vscode from "vscode";
 // import { inspect } from "util";
 
-import { registerSolidityHover } from "./features/hover";
 import { registerDefinition } from "./features/definitions";
+import { registerSolidityHover } from "./features/hover";
+import { registerSoliditySignature } from "./features/signature";
 import {
   solcCompletionItemsProvider,
   solcCompletionItemsAfterDotProvider,
@@ -112,6 +113,7 @@ export function activate(context: ExtensionContext) {
   registerEvents(diagnosticsCollection, lspMgr, context);
 
   registerSolidityHover(lspMgr);
+  registerSoliditySignature(lspMgr);
   registerDefinition(lspMgr);
   registerTypeDefinition(lspMgr);
   registerReferences(lspMgr);

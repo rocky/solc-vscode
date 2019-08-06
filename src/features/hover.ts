@@ -4,9 +4,12 @@ import {
   CancellationToken, Hover, languages, MarkdownString,
   Position, TextDocument
 } from "vscode";
-import { LspManager,
-         // solcRangeFromLineColRange
-       } from "solc-lsp";
+
+import {
+  LspManager,
+  // solcRangeFromLineColRange
+} from "solc-lsp";
+
 // import { SolcAstNode } from "../solc-astview";
 
 export function registerSolidityHover(lspMgr: LspManager) {

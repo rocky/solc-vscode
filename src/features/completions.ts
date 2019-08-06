@@ -16,35 +16,17 @@ import {
 import {
   ContractFnVarToType,
   FileInfo, LspManager,
-  Signature, StaticInfo
+  StaticInfo
 } from "solc-lsp";
+
+import {
+  createFunctionParamsSnippet,
+  endWordRegex ,
+  getLineTextAndFinfo
+} from "./helper";
+
 // import { LanguageServiceHost } from "./types";
 
-
-/* turn function/event parameters into a vscode Snippet and corresponding Markdown */
-function createFunctionParamsSnippet(signature: Signature) {
-  let paramArray: Array<string> = [];
-  let returnsDoc: Array<string> = [];
-  let docArray: Array<string> = [];
-  for (let i=0; i < signature.params.length;) {
-    const p = signature.params[i++];
-    paramArray.push(`\$\{${i}:${p.paramName}\}`);
-    docArray.push(`**${p.paramName}**: *${p.paramType}*`);
-  }
-  for (let i=0; i < signature.returns.length;) {
-    const p = signature.returns[i++];
-    returnsDoc.push(`**${p.paramName}**: *${p.paramType}*`);
-  }
-
-  let docStr = docArray.join(", ");
-  if (returnsDoc.length) {
-    docStr += `\n\n**returns** ${returnsDoc.join(", ")}`
-  }
-  return {
-    paramStr: paramArray.join(", "),
-    docStr: new MarkdownString(docStr)
-  };
-}
 
 function getFunctionCompletions(staticInfo: StaticInfo): CompletionItem[] {
   try {
@@ -317,7 +299,6 @@ const bytesMembers = ["pop()"].map(e => {
     });
 
 
-const endWordRegex = /[A-Za-z_][A-Za-z0-9_]*$/;
 /**
  * Find completions that can follow a ".". We use the word before as context for member names.
  *
@@ -330,7 +311,7 @@ export function getCompletionsAfterDot(finfo: FileInfo, lineText: string, dotOff
   // TODO: I believe there is a vscode way to do this.
   const beforeDot = lineText.substr(0, dotOffset);
   const matches = beforeDot.match(endWordRegex);
-  if (!matches) return [];;
+  if (!matches) return [];
   const word = matches[0];
 
   if (word === "block") {
@@ -363,31 +344,6 @@ export function getCompletionsAfterDot(finfo: FileInfo, lineText: string, dotOff
     return [];
   }
 }
-
-
-// function getTypeString(literal: any) {
-//   const isArray = literal.array_parts.length > 0;
-//   let isMapping = false;
-//   const literalType = literal.literal;
-//   let suffixType = '';
-
-//   if (typeof literalType.type !== 'undefined')  {
-//     isMapping = literalType.type === 'MappingExpression';
-//     if (isMapping) {
-//       suffixType = '(' + getTypeString(literalType.from) + ' => ' + getTypeString(literalType.to) + ')';
-//     }
-//   }
-
-//   if (isArray) {
-//     suffixType = suffixType + '[]';
-//   }
-
-//   if (isMapping) {
-//     return 'mapping' + suffixType;
-//   }
-
-//   return literalType + suffixType;
-// }
 
 function getBlockCompletions(): CompletionItem[] {
     return [
@@ -468,14 +424,6 @@ function getMsgCompletions(): CompletionItem[] {
             label: "value"
         }
     ];
-}
-
-function getLineTextAndFinfo(lspMgr: LspManager, document: TextDocument, position: Position): [FileInfo, string] {
-  const text = document.getText();
-  const lineTexts = text.split(/\r?\n/g);
-  const lineText = lineTexts[position.line];
-  const finfo = lspMgr.fileInfo[document.uri.path];
-  return [finfo, lineText];
 }
 
 export function solcCompletionItemsProvider (lspMgr: LspManager, document: TextDocument,
