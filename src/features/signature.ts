@@ -25,14 +25,22 @@ export function registerSoliditySignature(lspMgr: LspManager) {
       provideSignatureHelp(document: TextDocument, position: Position,
 		                       cancelToken: CancellationToken, context: SignatureHelpContext) {
 
-        if (context.triggerCharacter !== '(')
-          return undefined;
         if (cancelToken.isCancellationRequested) return undefined;
         const filePath = document.uri.fsPath;
         if (filePath in lspMgr.fileInfo) {
           const [finfo, lineText] = getLineTextAndFinfo(lspMgr, document, position);
-          const parenOffset = position.character-1;
-          const beforeParen = lineText.substr(0, parenOffset);
+          const triggerOffset = position.character-1;
+          const beforeTrigger = lineText.substr(0, triggerOffset);
+          let beforeParen = beforeTrigger;
+          if (context.triggerCharacter === ",") {
+            const parenIndex = beforeTrigger.lastIndexOf("(");
+            if (parenIndex > 0)
+              beforeParen = beforeTrigger.substr(0, parenIndex);
+            else
+              return undefined;
+          } else if (context.triggerCharacter !== "(")
+            return undefined;
+
           const matches = beforeParen.match(endWordRegex);
           if (!matches) return undefined;
           const word = matches[0];
