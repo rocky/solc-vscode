@@ -7,8 +7,8 @@
     "engines": {
         "vscode": "^1.36.0"
     },
-    "license": "MIT",
-    "version": "0.0.1",
+    "license": "Apache2",
+    "version": "1.0.0",
     "repository": {
         "type": "git",
         "url": "https://github.com/rocky/vscode-solc"
@@ -40,7 +40,11 @@
             {
                 "command": "solidity.revealAST",
                 "title": "Solidity: Toggle corresponding AST text span for current item"
-            }
+            },
+	    {
+		"command": "solidity.docstringThis",
+		"title": "Solidity: Create docstring for a function or contract"
+	    }
         ],
         "configuration": {
             "type": "object",
@@ -99,8 +103,12 @@
                 "key": "Ctrl+f5",
                 "mac": "Cmd+f5",
                 "when": "editorTextFocus && editorLangId == 'solidity'"
-            }
-        ],
+            },
+	    {
+		"command": "solidity.docstringThis",
+		"key": "ctrl+alt+d ctrl+alt+d"
+	    }
+	],
         "languages": [
             {
                 "id": "solidity",
@@ -114,6 +122,13 @@
                 "configuration": "./solidity.configuration.json"
             }
         ],
+	"menus": {
+	    "editor/context": [
+		{
+		    "command": "solidity.docstringThis"
+		}
+	    ]
+	},
         "snippets": [
             {
                 "language": "solidity",
@@ -148,6 +163,7 @@
     "devDependencies": {
         "@types/node": "*",
         "@types/vscode": "^1.36.0",
+        "handlebars": "^4.1.2",
         "js-yaml": "^3.13.1",
         "tslint": "^5.16.0",
         "typescript": "^3.4.5",

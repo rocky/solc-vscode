@@ -23,7 +23,7 @@ import {
 } from "./features/completions";
 import { registerTypeDefinition } from "./features/type-definition";
 import { registerReferences } from "./features/references";
-import { solcCompileActive, solcCompileActiveFull } from "./commands";
+import { solcDocstringThis, solcCompileActive, solcCompileActiveFull } from "./commands";
 import { registerEvents } from "./events";
 import { revealAST, SolidityASTView, TreeItem2 } from "./solc-astview";
 
@@ -56,6 +56,10 @@ export function activate(context: ExtensionContext) {
 
   context.subscriptions.push(commands.registerCommand("solidity.compile.full", () => {
     solcCompileActiveFull(diagnosticsCollection, lspMgr, context, true);
+  }));
+
+  context.subscriptions.push(commands.registerCommand("solidity.docstringThis", () => {
+    solcDocstringThis(lspMgr);
   }));
 
   commands.registerCommand("solidity.revealAST", async () => {
@@ -108,10 +112,11 @@ export function activate(context: ExtensionContext) {
   // context.subscriptions.push(provider1, provider2);
   // provider1; provider2;
 
+  /** FIXME: add completion item for docstring... */
+
   /****** End IntelliSense command completion ***********************/
 
   registerEvents(diagnosticsCollection, lspMgr, context);
-
   registerSolidityHover(lspMgr);
   registerSoliditySignature(lspMgr);
   registerDefinition(lspMgr);
