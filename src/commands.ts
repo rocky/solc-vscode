@@ -134,11 +134,11 @@ function getLineText(document: TextDocument, position: Position): string {
 const functionDocstringTemplate = `
 /** @dev $1
 {{#each parameters}}
-  * @param {{name}}
+  * @param {{name}} {{nextTabStop}}
 {{/each}}
   *
 {{#each returns}}
-  * @return {{name}}
+  * @return {{name}} {{nextTabStop}}
 {{/each}}
   */`;
 
@@ -181,6 +181,12 @@ export function solcDocstringThis(lspMgr: LspManager) {
         returns: node.returnParameters.parameters
       };
       try {
+        let tabstop = 1;
+        function nextTabStop(): string {
+          tabstop++;
+          return `\$\{${tabstop}:add description\}`;
+        };
+        Handlebars.registerHelper('nextTabStop', nextTabStop);
         /* handlebars will remove indentation on "each" iteration so we need to put
            indentation back here. */
         const snippetArray = functionDocstringTemplateC(docData).split(/\r?\n/g);

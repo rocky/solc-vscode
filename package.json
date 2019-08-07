@@ -125,7 +125,16 @@
 	"menus": {
 	    "editor/context": [
 		{
-		    "command": "solidity.docstringThis"
+		    "command": "solidity.docstringThis",
+		    "when": "editorLangId == solidity"
+		},
+		{
+		    "command": "solidity.compile.quick",
+		    "when": "editorLangId == solidity"
+		},
+		{
+		    "command": "solidity.compile.full",
+		    "when": "editorLangId == solidity"
 		}
 	    ]
 	},
