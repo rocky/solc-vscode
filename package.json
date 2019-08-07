@@ -41,10 +41,10 @@
                 "command": "solidity.revealAST",
                 "title": "Solidity: Toggle corresponding AST text span for current item"
             },
-	    {
-		"command": "solidity.docstringThis",
-		"title": "Solidity: Create docstring for a function or contract"
-	    }
+            {
+                "command": "solidity.docstringThis",
+                "title": "Solidity: Create docstring for a function or contract"
+            }
         ],
         "configuration": {
             "type": "object",
@@ -104,11 +104,11 @@
                 "mac": "Cmd+f5",
                 "when": "editorTextFocus && editorLangId == 'solidity'"
             },
-	    {
-		"command": "solidity.docstringThis",
-		"key": "ctrl+alt+d ctrl+alt+d"
-	    }
-	],
+            {
+                "command": "solidity.docstringThis",
+                "key": "ctrl+alt+d ctrl+alt+d"
+            }
+        ],
         "languages": [
             {
                 "id": "solidity",
@@ -122,22 +122,22 @@
                 "configuration": "./solidity.configuration.json"
             }
         ],
-	"menus": {
-	    "editor/context": [
-		{
-		    "command": "solidity.docstringThis",
-		    "when": "editorLangId == solidity"
-		},
-		{
-		    "command": "solidity.compile.quick",
-		    "when": "editorLangId == solidity"
-		},
-		{
-		    "command": "solidity.compile.full",
-		    "when": "editorLangId == solidity"
-		}
-	    ]
-	},
+        "menus": {
+            "editor/context": [
+                {
+                    "command": "solidity.docstringThis",
+                    "when": "editorLangId == solidity"
+                },
+                {
+                    "command": "solidity.compile.quick",
+                    "when": "editorLangId == solidity"
+                },
+                {
+                    "command": "solidity.compile.full",
+                    "when": "editorLangId == solidity"
+                }
+            ]
+        },
         "snippets": [
             {
                 "language": "solidity",
@@ -158,7 +158,6 @@
         "vscode:prepublish": "npm run compile",
         "build": "tsc -p ./",
         "grammar": "npm run grammar-lint && npx js-yaml syntaxes/solidity.yaml > syntaxes/solidity.json",
-        "grammar-test": "npx yaml-lint syntaxes/solidity-test.yaml && npx js-yaml syntaxes/solidity-test.yaml > syntaxes/solidity.json",
         "grammar-lint": "npx yaml-lint syntaxes/solidity.yaml",
         "lint": "tslint -p ./",
         "watch": "tsc -watch -p ./",
@@ -174,6 +173,8 @@
         "@types/vscode": "^1.36.0",
         "handlebars": "^4.1.2",
         "js-yaml": "^3.13.1",
+        "tap-spec": "^5.0.0",
+        "tape": "^4.11.0",
         "tslint": "^5.16.0",
         "typescript": "^3.4.5",
         "vscode": "^1.1.32",

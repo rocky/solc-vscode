@@ -266,6 +266,28 @@ const timeUnitCompletions = timeUnits.map(timeUnit => {
   }
 });
 
+const keywords = [
+  "abstract", "after", "alias", "anonymous", "apply", "auto",
+  "case", "catch", "copyof", "contract",
+  "default", "define", "event", "external",
+  "final", "function",
+  "immutable", "implements", "in", "indexed", "inline", "internal",
+  "let",  "macro", "match", "mutable", "null",
+  "of", "override",
+  "payable", "partial", "promise", "public", "private", "pure",
+  "reference", "relocatable", "returns",
+  "sealed", "sizeof", "static", "supports",
+  "switch", "this", "try", "typeof", "unchecked", "view"
+];
+
+const keywordCompletions = keywords.map(reservedWord => {
+  return {
+    detail: "Solidity keyword",
+    label: reservedWord,
+    kind: CompletionItemKind.Keyword
+  }
+});
+
 const unitCompletions = etherUnitCompletions.concat(timeUnitCompletions);
 
 export function getAllSolcCompletions(finfo: FileInfo): CompletionItem[] {
@@ -276,6 +298,7 @@ export function getAllSolcCompletions(finfo: FileInfo): CompletionItem[] {
     ...getGlobalVariableCompletions(),
     ...getVariableDeclarationCompletions(finfo.staticInfo),
     ...getTypeCompletions(finfo),
+    ...keywordCompletions,
     ...unitCompletions
   ];
 

@@ -1,6 +1,5 @@
 const assert = require("assert");
-debugger
-const d = require("../src/compiler/diagnostics");
+const d = require("../out/diagnostics");
 describe("solcErrorToDiagnostic)", () => {
     it("should parse a range location", () => {
 	    const expect = {
