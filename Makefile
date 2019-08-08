@@ -1,4 +1,4 @@
-.PHONY: compile vscode all grammar grammar-lint
+.PHONY: compile vscode all grammar grammar-lint test check
 
 #: "Build" this - really just an "npm install"
 all:
@@ -9,7 +9,7 @@ all:
 #: Compile typescript to javascript
 build: compile
 compile:
-	npx tsc --build
+	npm run compile
 
 #: Lint syntax grammar
 grammar:
@@ -34,3 +34,11 @@ clean:
 #: Start VSCode with proposed API extension for AST Tree Viewing
 start:
 	npm run start
+
+
+#: Same as check
+test: check
+
+#: Run regression tests
+check:
+	npm run test

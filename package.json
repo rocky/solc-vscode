@@ -7,7 +7,7 @@
     "engines": {
         "vscode": "^1.36.0"
     },
-    "license": "Apache2",
+    "license": "Apache-2.0",
     "version": "1.0.0",
     "repository": {
         "type": "git",
@@ -155,6 +155,7 @@
     },
     "icon": "images/icon.png",
     "scripts": {
+        "compile": "tsc -p ./",
         "vscode:prepublish": "npm run compile",
         "build": "tsc -p ./",
         "grammar": "npm run grammar-lint && npx js-yaml syntaxes/solidity.yaml > syntaxes/solidity.json",
@@ -163,21 +164,23 @@
         "watch": "tsc -watch -p ./",
         "update-vscode": "node ./node_modules/vscode/bin/install",
         "prepare": "npm run build",
-        "start": "code --enable-proposed-api rocky.vscode-solc ."
+        "start": "code --enable-proposed-api rocky.vscode-solc .",
+        "test": "node ./out/test/runTests.js"
     },
     "dependencies": {
         "solc-lsp": "file:../solc-lsp"
     },
     "devDependencies": {
+        "@types/glob": "^7.1.1",
+        "@types/mocha": "^5.2.6",
         "@types/node": "*",
         "@types/vscode": "^1.36.0",
         "handlebars": "^4.1.2",
         "js-yaml": "^3.13.1",
-        "tap-spec": "^5.0.0",
-        "tape": "^4.11.0",
+        "mocha": "^6.1.4",
         "tslint": "^5.16.0",
         "typescript": "^3.4.5",
-        "vscode": "^1.1.32",
+        "vscode-test": "^1.2.0",
         "yaml-lint": "^1.2.4"
     }
 }

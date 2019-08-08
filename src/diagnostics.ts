@@ -6,13 +6,13 @@ import {
 } from "vscode";
 
 export interface SolcError {
-    sourceLocation: {
+    sourceLocation?: {
         file: string;
         start: number;
         end: number;
     };
-    type: string;
-    component: string;
+    type: string;  // e.g. ParserError, TypeError...
+    component: string;  // general
     severity: "error" | "warning";
     message: string;
     formattedMessage: string;

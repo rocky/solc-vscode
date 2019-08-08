@@ -2,23 +2,29 @@
 {
     "version": "0.2.0",
     "configurations": [
-
         {
+            "name": "Launch Solidity Extension",
             "type": "extensionHost",
             "request": "launch",
-            "name": "Launch Solidity Client",
             "runtimeExecutable": "${execPath}",
             "args": ["--extensionDevelopmentPath=${workspaceRoot}" ],
             "outFiles": [ "${workspaceRoot}/out/src/**/*.js" ],
-            "stopOnEntry": false,
-            "sourceMaps": true,
-            // "preLaunchTask": "tsc-watch"
+            "stopOnEntry": false, // the default
+            "sourceMaps": true,   // the default
+            "preLaunchTask": "npm: watch"
         },
-        ],
-        "compounds": [
         {
-            "name": "Solidity Client + Server",
-            "configurations": ["Launch Solidity Client", "Attach to Solidity Language Server"]
+            "name": "Run Solidity Extension Mocha Tests",
+            "type": "extensionHost",
+            "request": "launch",
+	    "runtimeExecutable": "${execPath}",
+            "program": "${workspaceFolder}/node_modules/mocha/bin/_mocha",
+	    "args": [
+		"--extensionDevelopmentPath=${workspaceFolder}",
+		"--extensionTestsPath=${workspaceFolder}/out/test/suite/index"
+	    ],
+	    "outFiles": ["${workspaceFolder}/out/test/**/*.js"],
+	    "preLaunchTask": "npm: watch"
         }
     ]
 }

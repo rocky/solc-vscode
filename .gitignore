@@ -1,8 +1,9 @@
 *~
 .DS_Store
 .vscode
+/.vscode-test
 /node_modules
 /out
 /package-lock.json
-/tmp
 /syntaxes/solidity-test.yaml
+/tmp
