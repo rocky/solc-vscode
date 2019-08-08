@@ -24,7 +24,7 @@ And of course you need VSCode. Download it [here](https://code.visualstudio.com/
 
 ## node version 12 problem
 
-Right now this code runs `solc`, and untimately that pulls in the `scrypt` package. Nodejs version 12 doesn't work with this. See https://github.com/barrysteyn/node-scrypt/issues/193\.
+Right now this code runs `solc`, and untimately that pulls in the `scrypt` package. Nodejs version 12 doesn't work with this. See https://github.com/barrysteyn/node-scrypt/issues/193.
 
 # How to run code in this github repository
 
@@ -47,14 +47,17 @@ Install dependent npm packages:
 $ make
 ```
 
-Now just run from inside the `solc-vscode` folder
+For the AST view we use the [Proposed Extension API](https://code.visualstudio.com/updates/v1_29#_proposed-extension-apis) Tree2 located in `vscode.proposed.d.ts`.
+I have been having problems getting this recognized by tsc. So for now I have been including the meat of this file inside `node_modules/@types/vscode/index.d.ts`
+
+Because we use this experimental feature, you can't run `code` but must also give it the option `--enable-proposed-api rocky.vscode-solc`. The
+`start.sh` POSIX shell script does this.
+
+From inside the `solc-vscode` folder
 
 ```
-$ code .
+$ sh ./start.sh  # or bash ./start.sh. On Unixy systems, ./start.sh will work too.
 ```
-
-The code uses experimental TreeView features located in `vscode.proposed.d.ts`. I have been having problems getting this recognized by tsc. So for now I have been including
-the meat of this file inside `node_modules/@types/vscode/index.d.ts`
 
 ## Running
 
@@ -95,6 +98,17 @@ contract SimpleDAO {
 This when rendered inside be colorized, for example the tokens "pragma", "solidity" and "0.4.25" may appear in a different color. If the all appear in the same color then the language extension mechanism is not working and there is probably something wrong in the extension. Look in the other VSCode window with the orange frame for what might be wrong.
 
 But if everything is good, enter `Ctrl`-`Shift`-`P` and a list of commands will pop up. If you type "Solidity", you should see those specific to this extension.
+
+## Testing
+
+There are a few mocha tests of the code. At present, it feels running tests inside vscode is flaky when you start without debugging. I have been getting crashes. The most reliable has been to run test from outside:
+
+```shell
+$ npm run test
+```
+
+This requires though that you _not_ have vscode already running. If you do want to run the tests from inside vscode, the launch configuration "Run Solidity Extension Mocha Tests" has the right configuration for doing this.
+
 
 ## Debugging
 

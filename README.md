@@ -26,4 +26,4 @@ There have been several complete rewrites of this code. Here are sources I consu
 
 
 # Contributing
-Always feel free to help out!
+Always feel free to help out! Thanks for stopping by, and possibly trying and helping out.

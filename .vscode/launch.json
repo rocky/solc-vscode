@@ -17,14 +17,13 @@
             "name": "Run Solidity Extension Mocha Tests",
             "type": "extensionHost",
             "request": "launch",
-	    "runtimeExecutable": "${execPath}",
-            "program": "${workspaceFolder}/node_modules/mocha/bin/_mocha",
-	    "args": [
-		"--extensionDevelopmentPath=${workspaceFolder}",
-		"--extensionTestsPath=${workspaceFolder}/out/test/suite/index"
-	    ],
-	    "outFiles": ["${workspaceFolder}/out/test/**/*.js"],
-	    "preLaunchTask": "npm: watch"
+            "runtimeExecutable": "${execPath}",
+            "args": [
+                "--extensionDevelopmentPath=${workspaceFolder}",
+                "--extensionTestsPath=${workspaceFolder}/out/test/suite/index"
+            ],
+            "outFiles": ["${workspaceFolder}/out/test/**/*.js"],
+            "preLaunchTask": "npm: watch"
         }
     ]
 }
