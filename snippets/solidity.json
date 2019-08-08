@@ -56,5 +56,9 @@
 	    "prefix": "for",
 	    "body": "for (uint ${1:index} = 0; $1 < ${2:array}.length; $1${3:++}) {\n\t$0\n}"
 	}
+	"while statement": {
+	    "prefix": "while",
+	    "body": "while (boolean ${1:condition}) {\n\t$0\n}"
+	}
     }
 }

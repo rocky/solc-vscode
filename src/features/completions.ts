@@ -275,9 +275,9 @@ const keywords = [
   "let",  "macro", "match", "mutable", "null",
   "of", "override",
   "payable", "partial", "promise", "public", "private", "pure",
-  "reference", "relocatable", "returns",
+  "reference", "relocatable", "return", "returns",
   "sealed", "sizeof", "static", "supports",
-  "switch", "this", "try", "typeof", "unchecked", "view"
+  "switch", "this", "try", "typeof", "unchecked", "view", "while"
 ];
 
 const keywordCompletions = keywords.map(reservedWord => {

@@ -12,6 +12,7 @@ function run() {
     const testsRoot = path.resolve(__dirname, '..');
     return new Promise((c, e) => {
         glob('**/**.test.js', { cwd: testsRoot }, (err, files) => {
+        // glob('**/compile.test.js', { cwd: testsRoot }, (err, files) => {
             if (err) {
                 return e(err);
             }
@@ -19,6 +20,8 @@ function run() {
             files.forEach(f => mocha.addFile(path.resolve(testsRoot, f)));
             try {
                 // Run the mocha test
+		console.log("Hi");
+		debugger;
                 mocha.run(failures => {
                     if (failures > 0) {
                         e(new Error(`${failures} tests failed.`));

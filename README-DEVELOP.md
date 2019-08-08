@@ -101,6 +101,8 @@ But if everything is good, enter `Ctrl`-`Shift`-`P` and a list of commands will 
 
 ## Testing
 
+Testing seems broken. I am getting successes when there should be failures.
+
 There are a few mocha tests of the code. At present, it feels running tests inside vscode is flaky when you start without debugging. I have been getting crashes. The most reliable has been to run test from outside:
 
 ```shell
