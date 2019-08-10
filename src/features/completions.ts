@@ -270,14 +270,14 @@ const keywords = [
   "abstract", "after", "alias", "anonymous", "apply", "auto",
   "case", "catch", "copyof", "contract",
   "default", "define", "event", "external",
-  "final", "function",
+  "false", "final", "function",
   "immutable", "implements", "in", "indexed", "inline", "internal",
   "let",  "macro", "match", "mutable", "null",
   "of", "override",
   "payable", "partial", "promise", "public", "private", "pure",
   "reference", "relocatable", "return", "returns",
   "sealed", "sizeof", "static", "supports",
-  "switch", "this", "try", "typeof", "unchecked", "view", "while"
+  "switch", "this", "true", "try", "typeof", "unchecked", "view", "while"
 ];
 
 const keywordCompletions = keywords.map(reservedWord => {
