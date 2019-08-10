@@ -74,7 +74,7 @@ export function solcCompileActive(diagnosticCollection: DiagnosticCollection,
   const solcSourceCode = editor.document.getText();
   if (!solcSourceCode) return; // We need sourceCode
   const lineCount = (solcSourceCode.match(/\n/g) || "").length + 1;
-  lspMgr.compile(solcSourceCode, fileName, {}, truffleConfSnippet)
+  lspMgr.compile(solcSourceCode, fileName, truffleConfSnippet)
     .then((compiled: any) => {
 
       if (!compiled) {
