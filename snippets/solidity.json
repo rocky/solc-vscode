@@ -48,9 +48,13 @@
 	    "prefix": "mod",
 	    "body": "modifier ${1:name}($2) {\n\t$0_\n}"
 	},
-	"if else statement": {
-	    "prefix": "ife",
-	    "body": "if (${1:condition}) {\n\t$2\n} else {\n\t$0\n}"
+	"if statement": {
+	    "prefix": "if",
+	    "body": "if (${1:condition}) {\n\t$2\n}"
+	},
+	"else statement": {
+	    "prefix": "else",
+	    "body": "else {\n\t$0\n}"
 	},
 	"for statement": {
 	    "prefix": "for",
