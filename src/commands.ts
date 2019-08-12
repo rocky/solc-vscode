@@ -153,7 +153,7 @@ const functionDocstringTemplate = `
 {{/each}}
   *
 {{#each returns}}
-  * @return {{name}} {{nextTabStop}}
+  * @returns {{name}} {{nextTabStop}}
 {{/each}}
   */`;
 

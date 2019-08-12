@@ -104,19 +104,23 @@ repository:
 
   natspec-tag-dev:
     match: (@dev)\b
-    name: storage.type.dev.natspec
+    name: storage.type.dev.solidity
 
   natspec-tag-param:
     match: '(@param)(?:\s+([A-Za-z_]\w*))?\b'
     captures:
       '1':
-        name: storage.type.param.natspec
+        name: storage.type.param.solidity
       '2':
-        name: variable.other.natspec
+        name: variable.other.solidity
 
   natspec-tag-return:
-    match: (@return)\b
-    name: storage.type.return.natspec
+    match: '(@returns)(?:\s+([A-Za-z_]\w*))?\b'
+    captures:
+      '1':
+        name: storage.type.return.solidity
+      '2':
+        name: variable.other.solidity
   comment:
     patterns:
       - include: '#comment-line'
