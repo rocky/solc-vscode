@@ -153,7 +153,7 @@ const functionDocstringTemplate = `
 {{/each}}
   *
 {{#each returns}}
-  * @returns {{name}} {{nextTabStop}}
+  * @return {{name}} {{nextTabStop}}
 {{/each}}
   */`;
 
@@ -199,7 +199,7 @@ export function solcDocstringThis(lspMgr: LspManager) {
         let tabstop = 1;
         function nextTabStop(): string {
           tabstop++;
-          return `\$\{${tabstop}:add description\}`;
+          return `\$\{${tabstop}:*add description*\}`;
         };
         Handlebars.registerHelper('nextTabStop', nextTabStop);
         /* handlebars will remove indentation on "each" iteration so we need to put

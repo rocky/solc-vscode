@@ -115,7 +115,7 @@ repository:
         name: variable.other.solidity
 
   natspec-tag-return:
-    match: '(@returns)(?:\s+([A-Za-z_]\w*))?\b'
+    match: '(@return)(?:\s+([A-Za-z_]\w*))?\b'
     captures:
       '1':
         name: storage.type.return.solidity

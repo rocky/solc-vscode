@@ -1,6 +1,6 @@
 {
     "name": "vscode-solc",
-    "description": "VSCode support of Solidity using using primarily solc",
+    "description": "Solidity language support using Solidity's AST",
     "author": "Rocky Bernstein",
     "publisher": "rocky",
     "enableProposedApi": true,
@@ -168,7 +168,7 @@
         "test": "node ./out/test/runTests.js"
     },
     "dependencies": {
-        "solc-lsp": "file:../solc-lsp"
+        "solc-lsp": "^1.0.1"
     },
     "devDependencies": {
         "@types/glob": "^7.1.1",
