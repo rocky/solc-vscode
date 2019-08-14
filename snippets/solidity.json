@@ -25,7 +25,7 @@
 	    "body": "enum ${1:Name} {${2:item1}, ${3:item2} }"
 	},
 	"mapping declaration": {
-	    "prefix": "map",
+	    "prefix": "mapping",
 	    "body": "mapping (${1:type1}=>${2:type2}) ${3:name};"
 	},
 	"function declaration": {
@@ -41,7 +41,7 @@
 	    "body": "function ${1:name}(${2:type} ${3:name}) view public returns (${4:type} ${5:name}) {\n\t$0\n}"
         },
         "event declaration": {
-	    "prefix": "ev",
+	    "prefix": "event",
 	    "body": "event ${1:name}(${2:type} ${3:name} $0);"
 	},
 	"modifier declaration": {

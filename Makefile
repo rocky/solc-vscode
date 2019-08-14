@@ -23,6 +23,10 @@ grammar-lint:
 grammar-test:
 	npm run grammar-test
 
+#: lint (tslint) Typescript source code
+lint:
+	npm run lint
+
 #: Update vscode
 vscode:
 	npm run update-vscode

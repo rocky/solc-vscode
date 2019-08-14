@@ -6,11 +6,11 @@ import { window } from 'vscode';
 
 suite("solcErrorToDiagnostic Tests", () => {
   test("range location", function () {
-	  before(() => {
-		  window.showInformationMessage('Start diagnostic error tests.');
-	  });
+    before(() => {
+      window.showInformationMessage('Start diagnostic error tests.');
+    });
 
-	  test('solcErrToDiagnostic test', () => {
+    test('solcErrToDiagnostic test', () => {
       let expect = {
         message: "Member \"sendersfoo\" not found or not visible after argument-dependent lookup in msg.",
         range: {

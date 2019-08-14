@@ -39,7 +39,7 @@ export function registerSolidityHover(lspMgr: LspManager) {
           const staticInfo = info.staticInfo;
 
           // const editor = window.activeTextEditor;
-          // let node: SolcAstNode | null;
+          // let node: SolcAstNode | undefined;
           // if (editor) {
           //   const solcRange = solcRangeFromLineColRange(editor.selection, lspMgr.fileInfo[filePath].sourceMapping.lineBreaks);
           //   node = staticInfo.solcRangeToAstNode(solcRange);

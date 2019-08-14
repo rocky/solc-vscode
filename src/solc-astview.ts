@@ -44,7 +44,7 @@ export interface SolcAstNode {
   readonly [x: string]: any;
   // These are filled in
   children?: Array<SolcAstNode>;
-  parent?: SolcAstNode | null;
+  parent?: SolcAstNode | undefined;
 }
 
 /*** These are copied from vscode.proposed.d.ts *******/
@@ -69,10 +69,10 @@ export class TreeItem2 extends TreeItem {
      * Label describing this item. When `falsy`, it is derived from [resourceUri](#TreeItem.resourceUri).
      */
     label?: string | TreeItemLabel | /* for compilation */ any;
-	  id?: string;
-		collapsibleState?: TreeItemCollapsibleState;
-		command?: Command;
-		tooltip?: string | undefined;
+    id?: string;
+    collapsibleState?: TreeItemCollapsibleState;
+    command?: Command;
+    tooltip?: string | undefined;
 
   /**
      * @param label Label describing this item
@@ -91,23 +91,23 @@ const astRoots: any = {};
 
 // create a decorator type that we use to show AST range associations
 export const astRangeDecorationType = vscode.window.createTextEditorDecorationType({
-	borderWidth: '1px',
-	borderStyle: 'solid',
-	overviewRulerColor: 'blue',
-	overviewRulerLane: vscode.OverviewRulerLane.Right,
-	light: {
-		// this color will be used in light color themes
-		borderColor: 'darkblue'
-	},
-	dark: {
-		// this color will be used in dark color themes
-		borderColor: 'lightblue'
-	}
+  borderWidth: '1px',
+  borderStyle: 'solid',
+  overviewRulerColor: 'blue',
+  overviewRulerLane: vscode.OverviewRulerLane.Right,
+  light: {
+    // this color will be used in light color themes
+    borderColor: 'darkblue'
+  },
+  dark: {
+    // this color will be used in dark color themes
+    borderColor: 'lightblue'
+  }
 });
 
 export class SolidityASTView {
 
-  astRoot: SolcAstNode | null;
+  astRoot: SolcAstNode | undefined;
   lspMgr: LspManager;
 
   // Mapping from Solc AST id to solc AST node.
@@ -117,18 +117,19 @@ export class SolidityASTView {
   id2TreeItem: any = {};
 
   // Last selected tree node. Used in toggling highlighted source region.
-  lastSelected: string = '';
+  lastSelected = '';
 
   constructor(context: ExtensionContext,
-              lspMgr: LspManager, astRoot: SolcAstNode | null) {
+              lspMgr: LspManager, astRoot: SolcAstNode | undefined) {
     const view = vscode.window.createTreeView("solcAstView", {
       treeDataProvider: this.aNodeWithIdTreeDataProvider(),
       showCollapseAll: true,
     });
     this.lspMgr = lspMgr;
     this.astRoot = astRoot;
-    if (astRoot !== null && astRoot.absolutePath !== undefined)
+    if (astRoot !== undefined && astRoot.absolutePath !== undefined) {
       astRoots[astRoot.absolutePath] = this;
+    }
 
     // Bogus use of variables to keep typescript compiler happy.
     view; context;
@@ -137,14 +138,16 @@ export class SolidityASTView {
 
 
   createTreeItem(node: SolcAstNode): TreeItem2 {
-    if (!node) return {
-      label: <TreeItemLabel>{ label: "???", "foo": void 0},
-      collapsibleState: vscode.TreeItemCollapsibleState.None
-    };
-    let label: string = '';
+    if (!node) {
+      return {
+        label: <TreeItemLabel>{ label: "???", foo: void 0},
+        collapsibleState: vscode.TreeItemCollapsibleState.None
+      };
+    }
+    let label = "";
     let highlights: Array<[number, number]> = [];
     if ("name" in node) {
-      highlights = [[0, node.name.length]]
+      highlights = [[0, node.name.length]];
       label = `${node.name} ${node.nodeType}`;
     } else {
       label = node.nodeType;
@@ -159,7 +162,7 @@ export class SolidityASTView {
         ? vscode.TreeItemCollapsibleState.Collapsed : vscode.TreeItemCollapsibleState.None
     };
 
-    if (this.astRoot !== null) {
+    if (this.astRoot !== undefined) {
       item.id = `${idStr} ${this.astRoot.absolutePath}`;
     }
 
@@ -167,7 +170,7 @@ export class SolidityASTView {
       command: "solidity.astView.selectNode",
       title: "SelectNode",
       arguments: [item]
-    }
+    };
     this.id2TreeItem[node.id] = item;
     return item;
   }
@@ -181,7 +184,7 @@ export class SolidityASTView {
         const treeItem = this.createTreeItem(element);
         return treeItem;
       },
-      getParent: (element: SolcAstNode): SolcAstNode | null | undefined => {
+      getParent: (element: SolcAstNode): SolcAstNode | undefined | undefined => {
         return element.parent;
       }
     };
@@ -200,7 +203,7 @@ export class SolidityASTView {
     if (item.id === undefined) return;
 
     // FIXME: Don't assume activeTextEditor
-	  const activeEditor = window.activeTextEditor;
+    const activeEditor = window.activeTextEditor;
     if (!activeEditor) return;
 
     // FIXME: Split should split on 1st blank only and preserve other blanks
@@ -208,9 +211,9 @@ export class SolidityASTView {
 
     if (!(astRoot in astRoots)) return;
     const self = astRoots[astRoot];
-    if (self.lastSelected == item.id) {
-		  activeEditor.setDecorations(astRangeDecorationType, []);
-      self.lastSelected = null;
+    if (self.lastSelected === item.id) {
+      activeEditor.setDecorations(astRangeDecorationType, []);
+      self.lastSelected = undefined;
       return;
     }
     const node = self.id2Node[id];
@@ -218,9 +221,9 @@ export class SolidityASTView {
     const filePath = self.lspMgr.fileInfo.sourceList[fileIndex];
     const finfo = self.lspMgr.fileInfo[filePath];
     const targetRange = finfo.sourceMapping.lineColRangeFromSrc(node.src, 0, 0);
-		const decoration = { range: targetRange, hoverMessage: `Span for ${item.label.label}` };
+    const decoration = { range: targetRange, hoverMessage: `Span for ${item.label.label}` };
 
-		activeEditor.setDecorations(astRangeDecorationType, [decoration]);
+    activeEditor.setDecorations(astRangeDecorationType, [decoration]);
     self.lastSelected = item.id;
   }
 
@@ -242,7 +245,7 @@ export function revealAST(lspMgr: LspManager) {
 
   const solcRange = solcRangeFromLineColRange(editor.selection, lspMgr.fileInfo[fileName].sourceMapping.lineBreaks);
   const revealAstNode = lspMgr.solcAstNodeFromSolcRange(solcRange);
-  if (revealAstNode === null) return;
+  if (revealAstNode === undefined) return;
   const parents: Array<number> = [];
   let n = revealAstNode;
 

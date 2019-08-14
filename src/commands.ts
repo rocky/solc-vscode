@@ -47,7 +47,7 @@ const solcCompileQuickDefault = {
     enabled: false,
     runs: 0
   }
-}
+};
 
 export function solcCompileActive(diagnosticCollection: DiagnosticCollection,
                                  lspMgr: LspManager, context: ExtensionContext,
@@ -59,9 +59,9 @@ export function solcCompileActive(diagnosticCollection: DiagnosticCollection,
   }
 
   const fileName = editor.document.fileName;
-  if (path.extname(fileName) !== ".sol") {
-	  if (warn) window.showWarningMessage(`${fileName} not a solidity file (*.sol)`);
-	  return;
+  if (path.extname(fileName) !== ".sol" && editor.document.languageId !== "solidity") {
+    if (warn) window.showWarningMessage(`${fileName} not a solidity file (*.sol) nor is language set to "solidity"`);
+    return;
   }
 
   /*
@@ -73,23 +73,21 @@ export function solcCompileActive(diagnosticCollection: DiagnosticCollection,
   */
 
   const uri = Uri.file(fileName);
+  // tslint:disable-next-line
   const contracts_directory = path.dirname(fileName);
   const settings = {...solcCompileQuickDefault, ...solcCompileSettings };
+  const version = workspace.getConfiguration("solidity").get<string>("compileVersion");
   const truffleConfSnippet = {
     contracts_directory,
     compilers: {
-      solc: {
-        version: workspace.getConfiguration("solidity")
-          .get<string>("compileVersion"),
-        settings
-      }
+      solc: { version, settings }
     }
   };
 
   const solcSourceCode = editor.document.getText();
   if (!solcSourceCode) return; // We need sourceCode
   const lineCount = (solcSourceCode.match(/\n/g) || "").length + 1;
-  lspMgr.compile(solcSourceCode, fileName, truffleConfSnippet)
+  lspMgr.compile(fileName, solcSourceCode, undefined, truffleConfSnippet)
     .then((compiled: any) => {
 
       if (!compiled) {
@@ -98,15 +96,19 @@ export function solcCompileActive(diagnosticCollection: DiagnosticCollection,
       }
 
       // Update ASTView if we have an ast.
-      if ("sources" in compiled &&
-          fileName in compiled.sources &&
-          "ast" in compiled.sources[fileName]) {
+      if (!compiled.cached
+           && ("sources" in compiled
+               && fileName in compiled.sources
+               && "ast" in compiled.sources[fileName]
+               && version === compiled.solcVersion
+              )
+         ) {
         const solcAstRoot = compiled.sources[fileName].ast;
         new SolidityASTView(context, lspMgr, solcAstRoot);
       }
 
       diagnosticCollection.delete(uri);
-      if (compiled.errors) {
+      if ("errors" in compiled) {
         const diagnostics: Array<Diagnostic> = [];
         for (const compiledError of compiled.errors) {
           const diagnostic = solcErrToDiagnostic(compiledError, lineCount);
@@ -200,7 +202,7 @@ export function solcDocstringThis(lspMgr: LspManager) {
         function nextTabStop(): string {
           tabstop++;
           return `\$\{${tabstop}:*add description*\}`;
-        };
+        }
         Handlebars.registerHelper('nextTabStop', nextTabStop);
         /* handlebars will remove indentation on "each" iteration so we need to put
            indentation back here. */
@@ -211,7 +213,7 @@ export function solcDocstringThis(lspMgr: LspManager) {
       }
     } else if (node.nodeType === "ContractDefinition") {
       const indentPos = lineText.indexOf("contract");
-      if (indentPos < 0) return
+      if (indentPos < 0) return;
       indent = lineText.substr(0, indentPos);
       snippetStr = indent + contractTemplate;
     } else {

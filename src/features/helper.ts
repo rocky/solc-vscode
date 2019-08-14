@@ -41,25 +41,25 @@ export function getLineTextAndFinfo(lspMgr: LspManager, document: TextDocument, 
 
 /* turn function/event parameters into a vscode Snippet and corresponding Markdown */
 export function createFunctionParamsSnippet(signature: Signature) {
-  let paramArray: Array<string> = [];
-  let returnsDoc: Array<string> = [];
-  let docArray: Array<string> = [];
-  for (let i=0; i < signature.params.length;) {
+  const paramArray: Array<string> = [];
+  const returnsDoc: Array<string> = [];
+  const docArray: Array<string> = [];
+  for (let i = 0; i < signature.params.length;) {
     const p = signature.params[i++];
     paramArray.push(`\$\{${i}:${p.paramName}\}`);
     docArray.push(`**${p.paramName}**: *${p.paramType}*`);
   }
-  for (let i=0; i < signature.returns.length;) {
+  for (let i = 0; i < signature.returns.length;) {
     const p = signature.returns[i++];
     let markedStr = "";
     if (p.paramName) markedStr += `**${p.paramName}**:`;
-    markedStr += `*${p.paramType}*`
+    markedStr += `*${p.paramType}*`;
     returnsDoc.push(markedStr);
   }
 
   let docStr = docArray.join(", ");
   if (returnsDoc.length) {
-    docStr += `\n\n**returns** ${returnsDoc.join(", ")}`
+    docStr += `\n\n**returns** ${returnsDoc.join(", ")}`;
   }
   return {
     paramStr: paramArray.join(", "),

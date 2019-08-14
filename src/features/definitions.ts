@@ -26,9 +26,9 @@ export function registerDefinition(lspMgr: LspManager) {
     { scheme: "file", language: "solidity" },
     {
       provideDefinition(document: TextDocument, position: Position,
-			                  cancelToken: CancellationToken
+                        cancelToken: CancellationToken
                        ) {
-	      if (cancelToken.isCancellationRequested) return [];
+        if (cancelToken.isCancellationRequested) return [];
         /* FIXME: DRY with type-definition.ts code */
         const filePath = document.uri.fsPath;
         const tup = lspMgr.solcAstNodeFromLineColPosition(filePath, position);
@@ -37,11 +37,11 @@ export function registerDefinition(lspMgr: LspManager) {
         const queryNode = tup[1];
         const defNode = getDefinitionNodeFromSolcNode(finfo.staticInfo, queryNode);
 
-        if (defNode === null) return [];
+        if (defNode === undefined) return [];
         const originSelectionRange = finfo.sourceMapping.lineColRangeFromSrc(queryNode.src,
                                                                              0, 0);
         // FIXME: encapsulate the below in a function
-        const defPath = finfo.sourceList[defNode.src.split(":")[2]]
+        const defPath = finfo.sourceList[defNode.src.split(":")[2]];
         const defFinfo = lspMgr.fileInfo[defPath];
         const targetRange = defFinfo.sourceMapping.lineColRangeFromSrc(defNode.src, 0, 0);
 

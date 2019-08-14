@@ -27,9 +27,9 @@ export function registerReferences(lspMgr: LspManager) {
     {
       // tslint:disable-next-line:object-literal-shorthand
       provideReferences: async function(document: vscode.TextDocument, position: vscode.Position,
-					context: vscode.ReferenceContext, cancelToken: vscode.CancellationToken,
-      ): Promise<vscode.Location[]> {
-	if (cancelToken.isCancellationRequested) return [];
+                                        context: vscode.ReferenceContext, cancelToken: vscode.CancellationToken,
+                                       ): Promise<vscode.Location[]> {
+        if (cancelToken.isCancellationRequested) return [];
         context;
         const filePath = document.uri.fsPath;
         const tup = lspMgr.solcAstNodeFromLineColPosition(filePath, position);
@@ -37,12 +37,14 @@ export function registerReferences(lspMgr: LspManager) {
         const finfo = tup[0];
         const queryNode = tup[1];
         const useNodes = getReferencesFromSolcNode(finfo.staticInfo, queryNode);
-        if (useNodes === null || useNodes.length === 0) return [];
+        if (useNodes === undefined || useNodes.length === 0) {
+          return [];
+        }
         const locations: Array<vscode.Location> = [];
-      for (const node of useNodes) {
+        for (const node of useNodes) {
           const lcRange = finfo.sourceMapping.lineColRangeFromSrc(node.src, 0, 0);
           const range = new vscode.Range(lcRange.start.line, lcRange.start.character,
-            lcRange.end.line, lcRange.end.character);
+                                         lcRange.end.line, lcRange.end.character);
           locations.push(new vscode.Location(document.uri, range));
         }
         return locations;

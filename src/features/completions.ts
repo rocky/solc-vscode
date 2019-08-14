@@ -47,7 +47,7 @@ function getFunctionCompletions(staticInfo: StaticInfo): CompletionItem[] {
   try {
     const result: Array<CompletionItem> = [];
     for (const contractFnName in staticInfo.fns) {
-	    const [contractName, fnName] = contractFnName.split(".");
+      const [contractName, fnName] = contractFnName.split(".");
       const paramObj = createFunctionParamsSnippet(staticInfo.fns[contractFnName]);
       result.push({
         detail: `function in contract ${contractName}`,
@@ -56,7 +56,7 @@ function getFunctionCompletions(staticInfo: StaticInfo): CompletionItem[] {
         insertText: new SnippetString(`${fnName}(${paramObj.paramStr})`),
         label: contractFnName
       });
-    };
+    }
     return result;
   } catch {
     return [];
@@ -67,7 +67,7 @@ function getEventCompletions(staticInfo: StaticInfo): CompletionItem[] {
   try {
     const result: Array<CompletionItem> = [];
     for (const contractEventName in staticInfo.events) {
-	    const [contractName, eventName] = contractEventName.split(".");
+      const [contractName, eventName] = contractEventName.split(".");
       const paramObj = createFunctionParamsSnippet(staticInfo.events[contractEventName]);
       result.push({
         detail: `${contractName} event`,
@@ -76,7 +76,7 @@ function getEventCompletions(staticInfo: StaticInfo): CompletionItem[] {
         insertText: new SnippetString(`${eventName}(${paramObj.paramStr})`),
         label: contractEventName
       });
-    };
+    }
     return result;
   } catch {
     return [];
@@ -156,27 +156,27 @@ function getGlobalFunctionCompletions(): CompletionItem[] {
 }
 
 const globalBuiltinVariableCompletions = [
-    {
-      detail: "Current block",
-      kind: CompletionItemKind.Variable,
-      label: "block",
-    },
-    {
-      detail: "Current message",
-      kind: CompletionItemKind.Variable,
-      label: "msg",
-    },
-    {
-      detail: "(uint): current block timestamp (alias for block.timestamp)",
-      kind: CompletionItemKind.Variable,
-      label: "now",
-    },
-    {
-      detail: "Current transaction",
-      kind: CompletionItemKind.Variable,
-      label: "tx",
-    },
-  ];
+  {
+    detail: "Current block",
+    kind: CompletionItemKind.Variable,
+    label: "block",
+  },
+  {
+    detail: "Current message",
+    kind: CompletionItemKind.Variable,
+    label: "msg",
+  },
+  {
+    detail: "(uint): current block timestamp (alias for block.timestamp)",
+    kind: CompletionItemKind.Variable,
+    label: "now",
+  },
+  {
+    detail: "Current transaction",
+    kind: CompletionItemKind.Variable,
+    label: "tx",
+  },
+];
 
 function getGlobalVariableCompletions(): CompletionItem[] {
   return globalBuiltinVariableCompletions;
@@ -188,20 +188,20 @@ function createVariableSnippet(contractFnVarName: string, name: string, vars: Co
   return {
     varType,
     varDoc: new MarkdownString(`**${name}**: *${varType}*`)
-  }
+  };
 }
 
 function getVariableDeclarationCompletions(staticInfo: StaticInfo): CompletionItem[] {
   try {
     const result: Array<CompletionItem> = [];
     for (const contractFnVarName in staticInfo.vars) {
-	    const [contractName, fnName, varName] = contractFnVarName.split(".");
+      const [contractName, fnName, varName] = contractFnVarName.split(".");
       let name = contractFnVarName;
       let detail = `variable in contract ${contractName}`;
       if (fnName === '') {
-        name = `${contractName}.${varName}`
+        name = `${contractName}.${varName}`;
       } else {
-        detail += `, function ${fnName}`
+        detail += `, function ${fnName}`;
       }
       const varObj = createVariableSnippet(contractFnVarName, name, staticInfo.vars);
       result.push({
@@ -211,7 +211,7 @@ function getVariableDeclarationCompletions(staticInfo: StaticInfo): CompletionIt
         insertText: varName,
         label: name
       });
-    };
+    }
     return result;
   } catch {
     return [];
@@ -223,15 +223,15 @@ const builtinTypes = ["address", "string", "byte",
                       "int", "int8", "int16", "int32", "int64", "int128", "int256",  // skip other ints
                       "uint", "uint8", "uint16", "uint32", "uint64", "uint128", "uint256", // skip other units
                       "bool", "hash"
-                     ]
+                     ];
 
 const builtinTypeCompletions = builtinTypes.map(typeName => {
     return {
       detail: "built-in type",
       kind: CompletionItemKind.Keyword,
       label: typeName
-    }
-  });
+    };
+});
 
 function getTypeCompletions(finfo: FileInfo): CompletionItem[] {
   const staticInfo = finfo.staticInfo;
@@ -240,7 +240,7 @@ function getTypeCompletions(finfo: FileInfo): CompletionItem[] {
       detail: `User-defined enum type`,
       kind: CompletionItemKind.TypeParameter,
       label: typeName,
-    }
+    };
   });
   const structsDefined = Object.keys(staticInfo.structs).map(typeName => {
     return {
@@ -259,7 +259,7 @@ function getTypeCompletions(finfo: FileInfo): CompletionItem[] {
 */
 function getMapCompletions(finfo: FileInfo): CompletionItem[] {
   const items = getTypeCompletions(finfo);
-  for (const c of items) { c.label = " " + c.label }
+  for (const c of items) { c.label = " " + c.label; }
   return items;
 }
 
@@ -278,7 +278,7 @@ const timeUnitCompletions = timeUnits.map(timeUnit => {
     detail: `built-in time unit`,
     label: timeUnit,
     kind: CompletionItemKind.Unit
-  }
+  };
 });
 
 const keywords = [
@@ -300,7 +300,7 @@ const keywordCompletions = keywords.map(reservedWord => {
     detail: "Solidity keyword",
     label: reservedWord,
     kind: CompletionItemKind.Keyword
-  }
+  };
 });
 
 const unitCompletions = etherUnitCompletions.concat(timeUnitCompletions);
@@ -321,20 +321,20 @@ export function getAllSolcCompletions(finfo: FileInfo): CompletionItem[] {
 }
 
 const arrayMembers = ["length", "pop()", "push("].map(e => {
-      return {
-        detail: `${e}: array member`,
-        kind: CompletionItemKind.Method,
-        label: e
-      }
+  return {
+    detail: `${e}: array member`,
+    kind: CompletionItemKind.Method,
+    label: e
+  };
 });
 
 const bytesMembers = ["pop()"].map(e => {
-      return {
-        detail: `${e}: bytes variable`,
-        kind: CompletionItemKind.Method,
-        label: e
-      }
-    });
+  return {
+    detail: `${e}: bytes variable`,
+    kind: CompletionItemKind.Method,
+    label: e
+  };
+});
 
 
 /**
@@ -364,7 +364,7 @@ export function getCompletionsAfterDot(finfo: FileInfo, lineText: string, dotOff
         detail: `Enumeration literal of ${word}`,
         kind: CompletionItemKind.Enum,
         label: e
-      }
+      };
     });
   } else if (word in finfo.staticInfo.structs) {
     return finfo.staticInfo.structs[word].map((e: string) => {
@@ -372,7 +372,7 @@ export function getCompletionsAfterDot(finfo: FileInfo, lineText: string, dotOff
         detail: `Struct member of ${word}`,
         kind: CompletionItemKind.Field,
         label: e
-      }
+      };
     });
   } else if (finfo.staticInfo.arrays.has(word)) {
     return arrayMembers;
@@ -384,84 +384,84 @@ export function getCompletionsAfterDot(finfo: FileInfo, lineText: string, dotOff
 }
 
 function getBlockCompletions(): CompletionItem[] {
-    return [
-        {
-            detail: "(address): Current block miner’s address",
-            kind: CompletionItemKind.Property,
-            label: "coinbase"
-        },
-        {
-            detail: "(bytes32): Hash of the given block - only works for 256 most recent blocks excluding current",
-            insertText: "blockhash(${1:blockNumber});",
-            kind: CompletionItemKind.Method,
-            label: "blockhash"
-        },
-        {
-            detail: "(uint): current block difficulty",
-            kind: CompletionItemKind.Property,
-            label: "difficulty"
-        },
-        {
-            detail: "(uint): current block gaslimit",
-            kind: CompletionItemKind.Property,
-            label: "gasLimit"
-        },
-        {
-            detail: "(uint): current block number",
-            kind: CompletionItemKind.Property,
-            label: "number"
-        },
-        {
-            detail: "(uint): current block timestamp as seconds since unix epoch",
-            kind: CompletionItemKind.Property,
-            label: "timestamp"
-        }
-    ];
+  return [
+    {
+      detail: "(address): Current block miner’s address",
+      kind: CompletionItemKind.Property,
+      label: "coinbase"
+    },
+    {
+      detail: "(bytes32): Hash of the given block - only works for 256 most recent blocks excluding current",
+      insertText: "blockhash(${1:blockNumber});",
+      kind: CompletionItemKind.Method,
+      label: "blockhash"
+    },
+    {
+      detail: "(uint): current block difficulty",
+      kind: CompletionItemKind.Property,
+      label: "difficulty"
+    },
+    {
+      detail: "(uint): current block gaslimit",
+      kind: CompletionItemKind.Property,
+      label: "gasLimit"
+    },
+    {
+      detail: "(uint): current block number",
+      kind: CompletionItemKind.Property,
+      label: "number"
+    },
+    {
+      detail: "(uint): current block timestamp as seconds since unix epoch",
+      kind: CompletionItemKind.Property,
+      label: "timestamp"
+    }
+  ];
 }
 
 function getTxCompletions(): CompletionItem[] {
-    return [
-        {
-            detail: "(uint): gas price of the transaction",
-            kind: CompletionItemKind.Property,
-            label: "gas",
-        },
-        {
-            detail: "(address): sender of the transaction (full call chain)",
-            kind: CompletionItemKind.Property,
-            label: "origin",
-        },
-    ];
+  return [
+    {
+      detail: "(uint): gas price of the transaction",
+      kind: CompletionItemKind.Property,
+      label: "gas",
+    },
+    {
+      detail: "(address): sender of the transaction (full call chain)",
+      kind: CompletionItemKind.Property,
+      label: "origin",
+    },
+  ];
 }
 
 function getMsgCompletions(): CompletionItem[] {
-    return [
-        {
-            detail: "(bytes): complete calldata",
-            kind: CompletionItemKind.Property,
-            label: "data"
-        },
-        {
-            detail: "(uint): remaining gas",
-            kind: CompletionItemKind.Property,
-            label: "gas"
-        },
-        {
-            detail: "(address): sender of the message (current call)",
-            kind: CompletionItemKind.Property,
-            label: "sender"
-        },
-        {
-            detail: "(bytes4): first four bytes of the calldata (i.e. function identifier)",
-            kind: CompletionItemKind.Property,
-            label: "sig"
-        },
-        {
-            detail: "(uint): number of wei sent with the message",
-            kind: CompletionItemKind.Property,
-            label: "value"
-        }
-    ];
+  return [
+    {
+      detail: "(bytes): complete calldata",
+      kind: CompletionItemKind.Property,
+      label: "data"
+    },
+    {
+      detail: "(uint): remaining gas",
+      kind: CompletionItemKind.Property,
+      label: "gas"
+    },
+    {
+      detail: "(address): sender of the message (current call)",
+      kind: CompletionItemKind.Property,
+      label: "sender"
+    },
+    {
+      detail: "(bytes4): first four bytes of the calldata (i.e. function identifier)",
+      kind: CompletionItemKind.Property,
+      label: "sig"
+    },
+    {
+      detail: "(uint): number of wei sent with the message",
+      kind: CompletionItemKind.Property,
+      label: "value"
+    }
+  ];
 }
 
 export function solcCompletionItemsProvider (lspMgr: LspManager, document: TextDocument,
@@ -480,11 +480,12 @@ export function solcCompletionItemsAfterDotProvider(lspMgr: LspManager, document
   /* Something seems to be wrong in that we are not getting called back
      only on the trigger character, but always. So test context for TriggerCharacter
   */
-  if (context.triggerKind !== CompletionTriggerKind.TriggerCharacter || context.triggerCharacter !== '.')
+  if (context.triggerKind !== CompletionTriggerKind.TriggerCharacter || context.triggerCharacter !== '.') {
     return [];
+  }
   if (cancelToken.isCancellationRequested) return [];
   const [finfo, lineText] = getLineTextAndFinfo(lspMgr, document, position);
-  return getCompletionsAfterDot(finfo, lineText, position.character-1);
+  return getCompletionsAfterDot(finfo, lineText, position.character - 1);
 }
 
 export function solcCompletionItemsAfterMapProvider(lspMgr: LspManager, document: TextDocument,
@@ -493,10 +494,11 @@ export function solcCompletionItemsAfterMapProvider(lspMgr: LspManager, document
   /* Something seems to be wrong in that we are not getting called back
      only on the trigger character, but always. So test context for TriggerCharacter
   */
-  if (context.triggerKind !== CompletionTriggerKind.TriggerCharacter)
+  if (context.triggerKind !== CompletionTriggerKind.TriggerCharacter) {
     return [];
+  }
   if (cancelToken.isCancellationRequested) return [];
   const [finfo, lineText] = getLineTextAndFinfo(lspMgr, document, position);
-  if (lineText.substr(position.character-2, 2) != '=>') return [];
+  if (lineText.substr(position.character - 2, 2) !== '=>') return [];
   return getMapCompletions(finfo);
 }

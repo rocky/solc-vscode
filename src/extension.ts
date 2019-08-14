@@ -59,7 +59,7 @@ export function activate(context: ExtensionContext) {
   const diagnosticsCollection = vscode.languages.createDiagnosticCollection("Solidity");
   context.subscriptions.push(diagnosticsCollection);
 
-  const astView = new SolidityASTView(context, lspMgr, null);
+  const astView = new SolidityASTView(context, lspMgr, undefined);
 
   commands.registerCommand("solidity.astView.selectNode", (item: TreeItem2) => {
     astView.selectTreeItemToggle(item);
@@ -87,7 +87,7 @@ export function activate(context: ExtensionContext) {
     { provideCompletionItems:
       function(document: TextDocument,
                position: Position, cancelToken: CancellationToken,
-			         context: CompletionContext): CompletionItem[] {
+               context: CompletionContext): CompletionItem[] {
         return solcCompletionItemsProvider(lspMgr, document,  position, cancelToken,
                                            context);
 
@@ -101,7 +101,7 @@ export function activate(context: ExtensionContext) {
     { provideCompletionItems:
       function(document: TextDocument,
                position: Position, cancelToken: CancellationToken,
-			         context: CompletionContext): CompletionItem[] {
+               context: CompletionContext): CompletionItem[] {
         return solcCompletionItemsAfterDotProvider(lspMgr, document, position, cancelToken,
                                                    context);
       }
@@ -115,7 +115,7 @@ export function activate(context: ExtensionContext) {
     { provideCompletionItems:
       function(document: TextDocument,
                position: Position, cancelToken: CancellationToken,
-			         context: CompletionContext): CompletionItem[] {
+               context: CompletionContext): CompletionItem[] {
         return solcCompletionItemsAfterMapProvider(lspMgr, document, position, cancelToken,
                                                    context);
       }

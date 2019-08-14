@@ -20,18 +20,7 @@ import {
     Range
 } from "vscode";
 
-export interface SolcError {
-    sourceLocation?: {
-        file: string;
-        start: number;
-        end: number;
-    };
-    type: string;  // e.g. ParserError, TypeError...
-    component: string;  // general
-    severity: "error" | "warning";
-    message: string;
-    formattedMessage: string;
-}
+import { SolcError } from "solc-lsp";
 
 export function solcErrToDiagnostic(error: SolcError, maxLine: number): Diagnostic {
   const { message, formattedMessage, severity, sourceLocation } = error;
