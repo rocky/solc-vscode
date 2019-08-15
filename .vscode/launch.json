@@ -11,7 +11,7 @@
             "outFiles": [ "${workspaceRoot}/out/src/**/*.js" ],
             "stopOnEntry": false, // the default
             "sourceMaps": true,   // the default
-            "preLaunchTask": "npm: watch"
+            // "preLaunchTask": "npm: watch"  // Adding this seems to mess running
         },
         {
             "name": "Run Solidity Extension Mocha Tests",

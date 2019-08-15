@@ -34,6 +34,7 @@ import { registerSoliditySignature } from "./features/signature";
 import {
   solcCompletionItemsProvider,
   solcCompletionItemsAfterDotProvider,
+  solcCompletionItemsAfterLparenProvider,
   solcCompletionItemsAfterMapProvider
 } from "./features/completions";
 import { registerTypeDefinition } from "./features/type-definition";
@@ -108,6 +109,20 @@ export function activate(context: ExtensionContext) {
       // No resolveCompletionItem for now
     },
     "." // triggered whenever a '.' is being typed
+  );
+
+  vscode.languages.registerCompletionItemProvider(
+    { scheme: "file", language: "solidity" },
+    { provideCompletionItems:
+      function(document: TextDocument,
+               position: Position, cancelToken: CancellationToken,
+               context: CompletionContext): CompletionItem[] {
+        return solcCompletionItemsAfterLparenProvider(lspMgr, document, position, cancelToken,
+                                                      context);
+      }
+      // No resolveCompletionItem for now
+    },
+    "(" // triggered whenever a '(' is being typed
   );
 
   vscode.languages.registerCompletionItemProvider(

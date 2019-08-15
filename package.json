@@ -169,7 +169,7 @@
     },
     "dependencies": {
         "find-up": "^4.1.0",
-        "solc-lsp": "file:../solc-lsp"
+        "solc-lsp": "^1.1.0"
     },
     "devDependencies": {
         "@types/glob": "^7.1.1",

@@ -8,31 +8,27 @@
 - [See also:](#see-also)
 
 <!-- markdown-toc end -->
-Perhaps you want to help work on this awesome project? Or run from the github repository?
+Perhaps you want to help work on this awesome project? Or run it from the github repository?
 
 # Prerequisites...
 
 You need to have installed
 
-* [nodejs](https://nodejs.org/en/). Currently node version 12 cannot be used to build a dependent package `scrypt`, so use an earlier version. See below for details
+* [nodejs](https://nodejs.org/en/). Use node version 10.x. Node version 12 cannot be used. See below for details
 * [npm](https://www.npmjs.com/get-npm)
-
-There are a number of nodejs packages are needed, like [typescript](https://www.typescriptlang.org/), but you can get those via `npm`,
-which is described in a below [section](#how-to-run-code-in-this-github-repository).
 
 And of course you need VSCode. Download it [here](https://code.visualstudio.com/download).
 
 ## node version 12 problem
 
-Right now this code runs `solc`, and untimately that pulls in the `scrypt` package. Nodejs version 12 doesn't work with this. See https://github.com/barrysteyn/node-scrypt/issues/193.
+Right now this code runs `solc`, and that pulls in the `scrypt` package. Nodejs version 12 doesn't work with this. See https://github.com/barrysteyn/node-scrypt/issues/193.
 
 # How to run code in this github repository
 
 Clone the repository.
-You'll need to also clone `solc-lsp` at the same drectory level as solc-vscode:
+
 
 ```console
-$ git clone https://github.com/rocky/solc-lsp.git
 $ git clone https://github.com/rocky/solc-vscode.git
 Cloning into 'solc-vscode
 remote: Enumerating objects: 169, done.
@@ -61,12 +57,13 @@ $ sh ./start.sh  # or bash ./start.sh. On Unixy systems, ./start.sh will work to
 
 ## Running
 
-If you just want to run the code, on the top there is a "Debug" menu item and under that, the second item is "Start Without Debugging", which is also bound the key sequence `Ctrl`-`F5`.
+If you just want to run the code, on the top there is a "Debug" menu item and under that, the second item is "Start Without Debugging", which is also bound to the key sequence `Ctrl`-`F5`.
 
-After that, the VSCode window should turn from blue to orange and another window will pop up. In this window you will have the vscode extension installed and enabled.
+After that, the VS Code window should turn from blue to orange and another window will pop up. In this window you will have the VS Code extension installed and enabled.
 
-If you edit a solidity file, which is a file ending in `.sol` and looks like this:
+When you edit a solidity file, which is either a file ending in `.sol` or a editor that has language tag "solidity", it will be colorized.
 
+For example in this file:
 ```solidity
 /*
  * @source: http://blockchain.unica.it/projects/ethereum-survey/attacks.html#simpledao
@@ -95,7 +92,7 @@ contract SimpleDAO {
 }
 ```
 
-This when rendered inside be colorized, for example the tokens "pragma", "solidity" and "0.4.25" may appear in a different color. If the all appear in the same color then the language extension mechanism is not working and there is probably something wrong in the extension. Look in the other VSCode window with the orange frame for what might be wrong.
+the tokens "pragma", "solidity" and "0.4.25" may appear in a different color. If they all appear in the same color then the language extension mechanism is not working and there is probably something wrong in the extension. Look in the other VS Code window with the orange frame for what might be wrong.
 
 But if everything is good, enter `Ctrl`-`Shift`-`P` and a list of commands will pop up. If you type "Solidity", you should see those specific to this extension.
 
@@ -103,18 +100,18 @@ But if everything is good, enter `Ctrl`-`Shift`-`P` and a list of commands will 
 
 Testing seems broken. I am getting successes when there should be failures.
 
-There are a few mocha tests of the code. At present, it feels running tests inside vscode is flaky when you start without debugging. I have been getting crashes. The most reliable has been to run test from outside:
+There are a few mocha tests of the code. At present, running tests inside VS Code is flaky when you start without debugging. I have been getting crashes. It is more reliable to run test from outside:
 
 ```shell
 $ npm run test
 ```
 
-This requires though that you _not_ have vscode already running. If you do want to run the tests from inside vscode, the launch configuration "Run Solidity Extension Mocha Tests" has the right configuration for doing this.
+This requires that you _not_ have VS Code already running. If you do want to run the tests from inside VS Code, the launch configuration "Run Solidity Extension Mocha Tests" has the right configuration.
 
 
 ## Debugging
 
-You may want to extend this code of may find a problem and want to debug what is going wrong. For this, you start off from the "Debug" menu using the first item on the list "Start Debugging" which is also bound to the function key `F5`. As before the window will go orange a popup menu bar will appear at the top.
+You may want to extend this code, or may find a problem and want to debug. Start off from the "Debug" menu using the first item on the list "Start Debugging" which is also bound to the function key `F5`. As before the window will go orange and a popup menu bar will appear at the top.
 
 # See also:
 

@@ -1,23 +1,23 @@
 {
     ".source.solidity": {
 	"pragma solidity": {
-	    "prefix": "pra",
+	    "prefix": "pragma",
 	    "body": "pragma solidity ${1:version};"
 	},
 	"import contract": {
-	    "prefix": "im",
+	    "prefix": "import",
 	    "body": "import '${1:contract}';"
 	},
 	"contract declaration": {
-	    "prefix": "con",
+	    "prefix": "contract",
 	    "body": "contract ${1:Name} {\n\t$0\n}"
 	},
 	"library declaration": {
-	    "prefix": "lib",
+	    "prefix": "library",
 	    "body": "library ${1:Name} {\n\t$0\n}"
 	},
 	"interface declaration": {
-	    "prefix": "interf",
+	    "prefix": "interface",
 	    "body": "interface ${1:Name} {\n\t$0\n}"
 	},
 	"enum declaration": {
@@ -26,26 +26,22 @@
 	},
 	"mapping declaration": {
 	    "prefix": "mapping",
-	    "body": "mapping (${1:type1}=>${2:type2}) ${3:name};"
+	    "body": "mapping (${1:type1} => ${2:type2}) ${3:name};"
 	},
 	"function declaration": {
-	    "prefix": "function",
-	    "body": "function ${1:name}(${2:type} ${3:name}) {\n\t$0\n}"
+	    "prefix": "fun",
+	    "body": "function ${1:name}(${2:type} ${3:name}) ${4|external,public,internal,private|} ${5|pure,view,payable|} {\n\t$0\n}"
 	},
 	"function return declaration": {
 	    "prefix": "funcr",
-	    "body": "function ${1:name}(${2:type} ${3:name}) returns (${4:type} ${5:name}) {\n\t$0\n}"
+	    "body": "function ${1:name}(${2:type} ${3:name}) ${4|external,public,internal,private|} ${5|pure,view,payable|} returns (${6:type} ${7:name}) {\n\t$0\n}"
 	},
-        "function view declaration": {
-	    "prefix": "funcriew",
-	    "body": "function ${1:name}(${2:type} ${3:name}) view public returns (${4:type} ${5:name}) {\n\t$0\n}"
-        },
         "event declaration": {
 	    "prefix": "event",
 	    "body": "event ${1:name}(${2:type} ${3:name} $0);"
 	},
 	"modifier declaration": {
-	    "prefix": "mod",
+	    "prefix": "modifier",
 	    "body": "modifier ${1:name}($2) {\n\t$0_\n}"
 	},
 	"if statement": {

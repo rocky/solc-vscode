@@ -320,6 +320,17 @@ export function getAllSolcCompletions(finfo: FileInfo): CompletionItem[] {
   return completions;
 }
 
+export function getLparenSolcCompletions(finfo: FileInfo): CompletionItem[] {
+  const completions = [
+    ...getFunctionCompletions(finfo.staticInfo),
+    ...getGlobalFunctionCompletions(),
+    ...getGlobalVariableCompletions(),
+    ...getVariableDeclarationCompletions(finfo.staticInfo),
+  ];
+  return completions;
+}
+
+
 const arrayMembers = ["length", "pop()", "push("].map(e => {
   return {
     detail: `${e}: array member`,
@@ -497,8 +508,28 @@ export function solcCompletionItemsAfterMapProvider(lspMgr: LspManager, document
   if (context.triggerKind !== CompletionTriggerKind.TriggerCharacter) {
     return [];
   }
-  if (cancelToken.isCancellationRequested) return [];
+  if (cancelToken.isCancellationRequested) {
+    return [];
+  }
   const [finfo, lineText] = getLineTextAndFinfo(lspMgr, document, position);
-  if (lineText.substr(position.character - 2, 2) !== '=>') return [];
+  if (lineText.substr(position.character - 2, 2) !== '=>') {
+    return [];
+  }
   return getMapCompletions(finfo);
+}
+
+export function solcCompletionItemsAfterLparenProvider(lspMgr: LspManager, document: TextDocument,
+                                                       position: Position, cancelToken: CancellationToken,
+                                                       context: CompletionContext): CompletionItem[] {
+  if (context.triggerKind !== CompletionTriggerKind.TriggerCharacter) {
+    return [];
+  }
+  if (cancelToken.isCancellationRequested) {
+    return [];
+  }
+  const [finfo, lineText] = getLineTextAndFinfo(lspMgr, document, position);
+  if (lineText.substr(position.character - 1, 1) !== '(') {
+    return [];
+  }
+  return getLparenSolcCompletions(finfo);
 }
