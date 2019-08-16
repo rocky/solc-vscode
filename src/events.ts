@@ -23,8 +23,17 @@ import { LspManager } from "solc-lsp";
 
 export function registerEvents(diagnosticsCollection: DiagnosticCollection, lspMgr: LspManager,
                                context: ExtensionContext) {
-    vscode.workspace.onDidChangeTextDocument(e => {
-      solcCompileActive(diagnosticsCollection, lspMgr, context, false);
+
+  /* TODO: I tried putting this in a loop, but the Typescript typing mechanism is
+     fighting me. */
+  vscode.workspace.onDidChangeTextDocument(e => {
+    solcCompileActive(diagnosticsCollection, lspMgr, context, false);
+    e; // to make typescript happy
+    // console.log(`XXX: ${inspect(e)}`);
+  });
+
+  vscode.window.onDidChangeActiveTextEditor(e => {
+    solcCompileActive(diagnosticsCollection, lspMgr, context, false);
     e; // to make typescript happy
     // console.log(`XXX: ${inspect(e)}`);
   });

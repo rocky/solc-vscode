@@ -20,6 +20,7 @@ limitations under the License.
 
 import * as vscode from "vscode";
 import { getReferencesFromSolcNode, LspManager } from "solc-lsp";
+import { getLineTextAndFinfo } from "./helper";
 
 export function registerReferences(lspMgr: LspManager) {
   vscode.languages.registerReferenceProvider(
@@ -31,10 +32,22 @@ export function registerReferences(lspMgr: LspManager) {
                                        ): Promise<vscode.Location[]> {
         if (cancelToken.isCancellationRequested) return [];
         context;
+
         const filePath = document.uri.fsPath;
-        const tup = lspMgr.solcAstNodeFromLineColPosition(filePath, position);
-        if (!tup) return [];
-        const finfo = tup[0];
+        const [finfo, lineText] = getLineTextAndFinfo(lspMgr, document, position);
+
+        /* If we are positioned on the space after the possible
+           end of an identifier, back up one. */
+        if (lineText.substr(position.character, 1) === ' ' &&
+            lineText.substr(position.character-1, 1).match(/[A-Za-z0-9_]/)) {
+          position = new vscode.Position(position.line, position.character - 1);
+        }
+
+        const tup = lspMgr.solcAstNodeFromLineColPosition(filePath, position, -1);
+        if (!tup || !tup[0] || !tup[1]) return [];
+        if (finfo !== tup[0]) {
+          console.log(`Something's wrong; finfo ${finfo} should equal tup[0[ ${tup[0]}`);
+        }
         const queryNode = tup[1];
         const useNodes = getReferencesFromSolcNode(finfo.staticInfo, queryNode);
         if (useNodes === undefined || useNodes.length === 0) {

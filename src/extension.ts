@@ -60,6 +60,9 @@ export function activate(context: ExtensionContext) {
   const diagnosticsCollection = vscode.languages.createDiagnosticCollection("Solidity");
   context.subscriptions.push(diagnosticsCollection);
 
+  /* Set up events first so we catch them early on */
+  registerEvents(diagnosticsCollection, lspMgr, context);
+
   const astView = new SolidityASTView(context, lspMgr, undefined);
 
   commands.registerCommand("solidity.astView.selectNode", (item: TreeItem2) => {
@@ -146,7 +149,6 @@ export function activate(context: ExtensionContext) {
 
   /****** End IntelliSense command completion ***********************/
 
-  registerEvents(diagnosticsCollection, lspMgr, context);
   registerSolidityHover(lspMgr);
   registerSoliditySignature(lspMgr);
   registerDefinition(lspMgr);
@@ -156,6 +158,8 @@ export function activate(context: ExtensionContext) {
   // Use the console to output diagnostic information (console.log) and errors (console.error)
   // This line of code will only be executed once when your extension is activated
   console.log('Congratulations, your Solidity extension, "solc-vscode", is now active!');
+
+  solcCompileActive(diagnosticsCollection, lspMgr, context, true);
 
   // context.subscriptions.push(client);
 

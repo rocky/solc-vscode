@@ -47,7 +47,7 @@ export function registerSolidityHover(lspMgr: LspManager) {
           //   const solcOffset = info.sourceMapping.offsetFromLineColPosition(position);
           //   node = staticInfo.offsetToAstNode(solcOffset);
           // }
-          const solcOffset = info.sourceMapping.offsetFromLineColPosition(position);
+          const solcOffset = info.sourceMapping.offsetFromLineColPosition(position, -1);
           const node = staticInfo.offsetToAstNode(solcOffset);
 
           let mess: string;

@@ -20,6 +20,7 @@ limitations under the License.
 
 import { CancellationToken, DefinitionLink, languages, Position, TextDocument, Uri } from "vscode";
 import { getDefinitionNodeFromSolcNode, LspManager } from "solc-lsp";
+import { getLineTextAndFinfo } from "./helper";
 
 export function registerDefinition(lspMgr: LspManager) {
   languages.registerDefinitionProvider(
@@ -31,9 +32,21 @@ export function registerDefinition(lspMgr: LspManager) {
         if (cancelToken.isCancellationRequested) return [];
         /* FIXME: DRY with type-definition.ts code */
         const filePath = document.uri.fsPath;
-        const tup = lspMgr.solcAstNodeFromLineColPosition(filePath, position);
-        if (!tup) return [];
-        const finfo = tup[0];
+        const [finfo, lineText] = getLineTextAndFinfo(lspMgr, document, position);
+
+        /* If we are positioned on the space after the possible
+           end of an identifier, back up one. */
+        if (lineText.substr(position.character, 1) === ' ' &&
+            lineText.substr(position.character-1, 1).match(/[A-Za-z0-9_]/)) {
+          position = new Position(position.line, position.character - 1);
+        }
+
+        const tup = lspMgr.solcAstNodeFromLineColPosition(filePath, position, -1);
+        if (!tup || !tup[0] || !tup[1]) return [];
+        if (finfo !== tup[0]) {
+          console.log(`Something's wrong; finfo ${finfo} should equal tup[0[ ${tup[0]}`);
+        }
+
         const queryNode = tup[1];
         const defNode = getDefinitionNodeFromSolcNode(finfo.staticInfo, queryNode);
 
