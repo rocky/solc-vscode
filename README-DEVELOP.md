@@ -25,7 +25,7 @@ Right now this code runs `solc`, and that pulls in the `scrypt` package. Nodejs 
 
 # Run from VSIX file...
 
-This extension has been packaged as a [VSIX package](https://docs.microsoft.com/en-us/visualstudio/extensibility/anatomy-of-a-vsix-package?view=vs-2019). I have not been able to figure out how to use it to verify that this works. If you do, let me know.
+This extension has been packaged as a [VSIX package](https://docs.microsoft.com/en-us/visualstudio/extensibility/anatomy-of-a-vsix-package?view=vs-2019) inside http://github.com/rocky/solc-vscode/releases. I have not been able to figure out how to use it to verify that this works. If you do, let me know.
 
 # How to run code in this github repository
 
