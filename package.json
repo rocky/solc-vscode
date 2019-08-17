@@ -1,5 +1,5 @@
 {
-    "name": "vscode-solc",
+    "name": "solc-vscode",
     "description": "Solidity language support using Solidity's AST",
     "author": "Rocky Bernstein",
     "publisher": "rocky",

@@ -12,7 +12,7 @@ Perhaps you want to help work on this awesome project? Or run it from the github
 
 # Prerequisites...
 
-You need to have installed
+You need to have installed:
 
 * [nodejs](https://nodejs.org/en/). Use node version 10.x. Node version 12 cannot be used. See below for details
 * [npm](https://www.npmjs.com/get-npm)
@@ -22,6 +22,10 @@ And of course you need VSCode. Download it [here](https://code.visualstudio.com/
 ## node version 12 problem
 
 Right now this code runs `solc`, and that pulls in the `scrypt` package. Nodejs version 12 doesn't work with this. See https://github.com/barrysteyn/node-scrypt/issues/193.
+
+# Run from VSIX file...
+
+This extension has been packaged as a [VSIX package](https://docs.microsoft.com/en-us/visualstudio/extensibility/anatomy-of-a-vsix-package?view=vs-2019). I have not been able to figure out how to use it to verify that this works. If you do, let me know.
 
 # How to run code in this github repository
 
@@ -53,6 +57,21 @@ From inside the `solc-vscode` folder
 
 ```
 $ sh ./start.sh  # or bash ./start.sh. On Unixy systems, ./start.sh will work too.
+```
+
+## Adding to your installed extensions.
+
+I followed information from https://vscode-docs.readthedocs.io/en/stable/extensions/install-extension/. Basically after running `make`, symlink the project in your `.vscode/extensions` folker:
+
+* Windows `%USERPROFILE%\.vscode\extensions`
+* Mac `$HOME/.vscode/extensions`
+* Linux `$HOME/.vscode/extensions`
+
+So in a POSIX shell:
+
+```
+$ cd solc-vscode # root of github project
+$ ln -s (cwd) -vs $HOME/.vscode/extensions
 ```
 
 ## Running
