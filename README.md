@@ -10,6 +10,15 @@ Microsoft's [Language Server Protocol](https://github.com/Microsoft/language-ser
 
 If you are looking for something ready for day-to-day use, I recommend the [solidity plugin](https://marketplace.visualstudio.com/items?itemName=JuanBlanco.solidity) written by Juan Blanco.
 
+# Videos
+
+I have 3 short demos of this code on youtube:
+
+* Part 1 [Find References, Peek/Goto Definition, and AST Nodes
+](https://www.youtube.com/watch?v=jV1DLPnUPUU)
+* Part 2 [ Error recovery and Solidity AST TreeView](https://www.youtube.com/watch?v=jV1DLPnUPUU)=jV1DLPnUPUU)
+* Part 3 [Completion and Doc Comments](https://www.youtube.com/watch?v=SaaAYaEvrXE)
+
 # Installation
 
 See [README-DEVELOP.md](https://github.com/rocky/solc-vscode/blob/master/README-DEVELOP.md) for how to install and run.
@@ -22,7 +31,6 @@ There have been several complete rewrites of this code. Here are the sources I c
 * Microsoft tutorial on writing a VS Code extension. The simple code for the LSP example is from https://github.com/microsoft/vscode-extension-samples/tree/master/lsp-sample. (But right now everything is client-side.)
 * The now defunct [kodebox project](https://marketplace.visualstudio.com/items?itemName=kodebox.solidity-language-server)
 * Juan Blanco's plugin mentioned above.
-
 
 
 # Contributing
