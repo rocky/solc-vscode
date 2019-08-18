@@ -1,4 +1,4 @@
-Solidity VS Code Extension base on solc-lsp
+Solidity VS Code Extension based on solc-lsp
 =====================================================
 
 ![extension demo](https://github.com/rocky/solc-vscode/blob/master/screenshots/vscode-demo.gif "Hover and LSP functions")
