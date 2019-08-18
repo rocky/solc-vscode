@@ -1,5 +1,7 @@
 Solidity VS Code Extension base on solc-lsp
-==========================================
+=====================================================
+
+![extension demo](https://github.com/rocky/solc-vscode/blob/master/screenshots/vscode-demo.gif "Hover and LSP functions")
 
 **This project is in the alpha stage of development.**
 
@@ -16,7 +18,7 @@ I have 3 short demos of this code on youtube:
 
 * Part 1 [Find References, Peek/Goto Definition, and AST Nodes
 ](https://www.youtube.com/watch?v=jV1DLPnUPUU)
-* Part 2 [ Error recovery and Solidity AST TreeView](https://www.youtube.com/watch?v=jV1DLPnUPUU)=jV1DLPnUPUU)
+* Part 2 [Error recovery and Solidity AST TreeView](https://www.youtube.com/watch?v=jV1DLPnUPUU)
 * Part 3 [Completion and Doc Comments](https://www.youtube.com/watch?v=SaaAYaEvrXE)
 
 # Installation
